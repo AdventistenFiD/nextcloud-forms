@@ -934,10 +934,8 @@ export default {
 	}
 
 	.submission-message {
+		text-align: center;
 		@include markdown-output;
-		& {
-			text-align: center;
-		}
 	}
 
 	form {

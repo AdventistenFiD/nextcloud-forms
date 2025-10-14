@@ -39,6 +39,12 @@ use OCP\AppFramework\Db\Entity;
  * @method void setAllowEditSubmissions(bool $value)
  * @method int getShowExpiration()
  * @method void setShowExpiration(bool $value)
+ * @method bool getSendSubmissionEmail()
+ * @method void setSendSubmissionEmail(bool $value)
+ * @method bool getAttachSubmissionPdf()
+ * @method void setAttachSubmissionPdf(bool $value)
+ * @method bool getSendConfirmationEmail()
+ * @method void setSendConfirmationEmail(bool $value)
  * @method int getLastUpdated()
  * @method void setLastUpdated(int $value)
  * @method string|null getSubmissionMessage()
@@ -67,6 +73,9 @@ class Form extends Entity {
 	protected $allowEditSubmissions;
 	protected $showExpiration;
 	protected $submissionMessage;
+	protected $sendSubmissionEmail;
+	protected $attachSubmissionPdf;
+	protected $sendConfirmationEmail;
 	protected $lastUpdated;
 	protected $state;
 	protected $lockedBy;
@@ -82,6 +91,9 @@ class Form extends Entity {
 		$this->addType('submitMultiple', 'boolean');
 		$this->addType('allowEditSubmissions', 'boolean');
 		$this->addType('showExpiration', 'boolean');
+		$this->addType('sendSubmissionEmail', 'boolean');
+		$this->addType('attachSubmissionPdf', 'boolean');
+		$this->addType('sendConfirmationEmail', 'boolean');
 		$this->addType('lastUpdated', 'integer');
 		$this->addType('state', 'integer');
 		$this->addType('lockedBy', 'string');
@@ -154,6 +166,9 @@ class Form extends Entity {
 	 *   submitMultiple: bool,
 	 *   allowEditSubmissions: bool,
 	 *   showExpiration: bool,
+	 *   sendSubmissionEmail: bool,
+	 *   attachSubmissionPdf: bool,
+	 *   sendConfirmationEmail: bool,
 	 *   lastUpdated: int,
 	 *   submissionMessage: ?string,
 	 *   state: 0|1|2,
@@ -177,6 +192,9 @@ class Form extends Entity {
 			'submitMultiple' => (bool)$this->getSubmitMultiple(),
 			'allowEditSubmissions' => (bool)$this->getAllowEditSubmissions(),
 			'showExpiration' => (bool)$this->getShowExpiration(),
+			'sendSubmissionEmail' => (bool)$this->getSendSubmissionEmail(),
+			'attachSubmissionPdf' => (bool)$this->getAttachSubmissionPdf(),
+			'sendConfirmationEmail' => (bool)$this->getSendConfirmationEmail(),
 			'lastUpdated' => (int)$this->getLastUpdated(),
 			'submissionMessage' => $this->getSubmissionMessage(),
 			'state' => $this->getState(),

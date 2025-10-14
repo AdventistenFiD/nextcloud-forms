@@ -22,6 +22,7 @@ import IconPalette from '../components/Icons/IconPalette.vue'
 import IconRadioboxMarked from 'vue-material-design-icons/RadioboxMarked.vue'
 import IconTextLong from 'vue-material-design-icons/TextLong.vue'
 import IconTextShort from 'vue-material-design-icons/TextShort.vue'
+import IconEmail from 'vue-material-design-icons/EmailOutline.vue'
 
 /**
  * @typedef {object} AnswerTypes
@@ -126,6 +127,19 @@ export default {
 		createPlaceholder: t('forms', 'People can enter a short answer'),
 		submitPlaceholder: t('forms', 'Enter your answer'),
 		warningInvalid: t('forms', 'This question needs a title!'),
+	},
+
+	email: {
+		component: QuestionShort,
+		icon: IconEmail,
+		label: t('forms', 'Email address'),
+		predefined: false,
+
+		titlePlaceholder: t('forms', 'Short answer question title'),
+		createPlaceholder: t('forms', 'People can enter an email address'),
+		submitPlaceholder: t('forms', 'Enter an email address'),
+		warningInvalid: t('forms', 'This question needs a title!'),
+		fixedValidationType: 'email',
 	},
 
 	long: {

@@ -42,7 +42,7 @@ namespace OCA\Forms;
  *   validationType?: string
  * }
  *
- * @psalm-type FormsQuestionType = "dropdown"|"multiple"|"multiple_unique"|"date"|"time"|"short"|"long"|"file"|"datetime"
+ * @psalm-type FormsQuestionType = "dropdown"|"multiple"|"multiple_unique"|"date"|"time"|"short"|"email"|"long"|"file"|"datetime"
  *
  * @psalm-type FormsQuestion = array{
  *   id: int,
@@ -127,6 +127,9 @@ namespace OCA\Forms;
  *   submitMultiple: bool,
  *   allowEditSubmissions: bool,
  *   showExpiration: bool,
+ *   sendSubmissionEmail: bool,
+ *   attachSubmissionPdf: bool,
+ *   sendConfirmationEmail: bool,
  *   canSubmit: bool,
  *   permissions: list<FormsPermission>,
  *   questions: list<FormsQuestion>,

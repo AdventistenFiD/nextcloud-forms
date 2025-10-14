@@ -286,7 +286,7 @@ export default {
 		 *                          If true, the date range is enabled; otherwise, null.
 		 */
 		onDateRangeChange(value) {
-			this.onExtraSettingsChange({ dateRange: value === true ?? null })
+			this.onExtraSettingsChange({ dateRange: value === true ? true : null })
 		},
 
 		/**
@@ -329,7 +329,7 @@ export default {
 		 *                          If true, the date range is enabled; otherwise, null.
 		 */
 		onTimeRangeChange(value) {
-			this.onExtraSettingsChange({ timeRange: value === true ?? null })
+			this.onExtraSettingsChange({ timeRange: value === true ? true : null })
 		},
 
 		/**

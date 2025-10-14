@@ -7,6 +7,7 @@ declare(strict_types=1);
  */
 namespace OCA\Forms\Tests\Integration;
 
+use Doctrine\DBAL\Exception as DBALException;
 use OCA\Forms\AppInfo\Application;
 use OCA\Forms\Constants;
 use OCP\DB\QueryBuilder\IQueryBuilder;
@@ -21,6 +22,7 @@ use Test\TestCase;
 class IntegrationBase extends TestCase {
 	/** @var Array */
 	protected $testForms;
+	private array $columnExistsCache = [];
 
 	/**
 	 * Users that are needed by this test case
@@ -53,24 +55,30 @@ class IntegrationBase extends TestCase {
 
 		// Write our test forms into db
 		foreach ($this->testForms as $index => $form) {
+			$values = [
+				'hash' => $qb->createNamedParameter($form['hash'], IQueryBuilder::PARAM_STR),
+				'title' => $qb->createNamedParameter($form['title'], IQueryBuilder::PARAM_STR),
+				'description' => $qb->createNamedParameter($form['description'], IQueryBuilder::PARAM_STR),
+				'owner_id' => $qb->createNamedParameter($form['owner_id'], IQueryBuilder::PARAM_STR),
+				'access_enum' => $qb->createNamedParameter($form['access_enum'], IQueryBuilder::PARAM_INT),
+				'created' => $qb->createNamedParameter($form['created'], IQueryBuilder::PARAM_INT),
+				'expires' => $qb->createNamedParameter($form['expires'], IQueryBuilder::PARAM_INT),
+				'state' => $qb->createNamedParameter($form['state'], IQueryBuilder::PARAM_INT),
+				'is_anonymous' => $qb->createNamedParameter($form['is_anonymous'], IQueryBuilder::PARAM_BOOL),
+				'submit_multiple' => $qb->createNamedParameter($form['submit_multiple'], IQueryBuilder::PARAM_BOOL),
+				'show_expiration' => $qb->createNamedParameter($form['show_expiration'], IQueryBuilder::PARAM_BOOL),
+				'last_updated' => $qb->createNamedParameter($form['last_updated'], IQueryBuilder::PARAM_INT),
+				'submission_message' => $qb->createNamedParameter($form['submission_message'], IQueryBuilder::PARAM_STR),
+				'file_id' => $qb->createNamedParameter($form['file_id'], IQueryBuilder::PARAM_INT),
+				'file_format' => $qb->createNamedParameter($form['file_format'], IQueryBuilder::PARAM_STR),
+			];
+			if (isset($form['send_submission_email']) && $this->columnExists('forms_v2_forms', 'send_submission_email')) {
+				$values['send_submission_email'] = $qb->createNamedParameter($form['send_submission_email'], IQueryBuilder::PARAM_BOOL);
+				$values['attach_submission_pdf'] = $qb->createNamedParameter($form['attach_submission_pdf'], IQueryBuilder::PARAM_BOOL);
+				$values['send_confirmation_email'] = $qb->createNamedParameter($form['send_confirmation_email'], IQueryBuilder::PARAM_BOOL);
+			}
 			$qb->insert('forms_v2_forms')
-				->values([
-					'hash' => $qb->createNamedParameter($form['hash'], IQueryBuilder::PARAM_STR),
-					'title' => $qb->createNamedParameter($form['title'], IQueryBuilder::PARAM_STR),
-					'description' => $qb->createNamedParameter($form['description'], IQueryBuilder::PARAM_STR),
-					'owner_id' => $qb->createNamedParameter($form['owner_id'], IQueryBuilder::PARAM_STR),
-					'access_enum' => $qb->createNamedParameter($form['access_enum'], IQueryBuilder::PARAM_INT),
-					'created' => $qb->createNamedParameter($form['created'], IQueryBuilder::PARAM_INT),
-					'expires' => $qb->createNamedParameter($form['expires'], IQueryBuilder::PARAM_INT),
-					'state' => $qb->createNamedParameter($form['state'], IQueryBuilder::PARAM_INT),
-					'is_anonymous' => $qb->createNamedParameter($form['is_anonymous'], IQueryBuilder::PARAM_BOOL),
-					'submit_multiple' => $qb->createNamedParameter($form['submit_multiple'], IQueryBuilder::PARAM_BOOL),
-					'show_expiration' => $qb->createNamedParameter($form['show_expiration'], IQueryBuilder::PARAM_BOOL),
-					'last_updated' => $qb->createNamedParameter($form['last_updated'], IQueryBuilder::PARAM_INT),
-					'submission_message' => $qb->createNamedParameter($form['submission_message'], IQueryBuilder::PARAM_STR),
-					'file_id' => $qb->createNamedParameter($form['file_id'], IQueryBuilder::PARAM_INT),
-					'file_format' => $qb->createNamedParameter($form['file_format'], IQueryBuilder::PARAM_STR),
-				]);
+				->values($values);
 			$qb->executeStatement();
 			$formId = $qb->getLastInsertId();
 			$this->testForms[$index]['id'] = $formId;
@@ -188,5 +196,24 @@ class IntegrationBase extends TestCase {
 		}
 
 		parent::tearDown();
+	}
+
+	private function columnExists(string $table, string $column): bool {
+		$cacheKey = $table . ':' . $column;
+		if (!array_key_exists($cacheKey, $this->columnExistsCache)) {
+			$db = \OCP\Server::get(IDBConnection::class);
+			$qb = $db->getQueryBuilder();
+			$qb->select($column)
+				->from($table)
+				->setMaxResults(1);
+			try {
+				$qb->executeQuery()->fetchOne();
+				$this->columnExistsCache[$cacheKey] = true;
+			} catch (DBALException $e) {
+				$this->columnExistsCache[$cacheKey] = false;
+			}
+		}
+
+		return $this->columnExistsCache[$cacheKey];
 	}
 };

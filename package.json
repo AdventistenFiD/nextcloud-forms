@@ -1,6 +1,6 @@
 {
   "name": "forms",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "private": true,
   "description": "Forms app for nextcloud",
   "homepage": "https://github.com/nextcloud/forms#readme",
@@ -19,8 +19,8 @@
     "dev:watch": "NODE_OPTIONS='--max-old-space-size=4096' npx vite --mode development build --watch",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "lint": "eslint --ext .js,.vue src",
-    "lint:fix": "eslint --ext .js,.vue src --fix",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint \"src/**/*.{js,vue}\"",
+    "lint:fix": "ESLINT_USE_FLAT_CONFIG=false eslint \"src/**/*.{js,vue}\" --fix",
     "start:nextcloud": "node playwright/start-nextcloud-server.mjs",
     "stylelint": "stylelint css/*.css css/*.scss src/**/*.vue",
     "stylelint:fix": "stylelint css/*.css css/*.scss src/**/*.vue --fix"
@@ -51,6 +51,7 @@
     "vuedraggable": "^2.24.3"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.4.0",
     "@mdi/js": "^7.4.47",
     "@mdi/svg": "^7.4.47",
     "@nextcloud/browserslist-config": "^3.0.1",
@@ -62,6 +63,8 @@
     "@playwright/test": "^1.56.0",
     "@vue/tsconfig": "^0.5.1",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-cypress": "^3.0.3",
+    "globals": "^16.4.0",
     "prettier": "^3.6.2",
     "vite": "^7.1.9"
   },

@@ -505,7 +505,11 @@ class ApiController extends OCSController {
 			$question->setText($text);
 			$question->setDescription('');
 			$question->setIsRequired(false);
-			$question->setExtraSettings([]);
+			$extraSettings = [];
+			if ($type === Constants::ANSWER_TYPE_EMAIL) {
+				$extraSettings['validationType'] = 'email';
+			}
+			$question->setExtraSettings($extraSettings);
 
 			$question = $this->questionMapper->insert($question);
 

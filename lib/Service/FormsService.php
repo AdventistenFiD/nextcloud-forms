@@ -797,6 +797,7 @@ class FormsService {
 				$allowed = Constants::EXTRA_SETTINGS_MULTIPLE;
 				break;
 			case Constants::ANSWER_TYPE_SHORT:
+			case Constants::ANSWER_TYPE_EMAIL:
 				$allowed = Constants::EXTRA_SETTINGS_SHORT;
 				break;
 			case Constants::ANSWER_TYPE_FILE:
@@ -869,7 +870,10 @@ class FormsService {
 			}
 
 			// Special handling of short input for validation
-		} elseif ($questionType === Constants::ANSWER_TYPE_SHORT && isset($extraSettings['validationType'])) {
+		} elseif (
+			in_array($questionType, [Constants::ANSWER_TYPE_SHORT, Constants::ANSWER_TYPE_EMAIL], true)
+			&& isset($extraSettings['validationType'])
+		) {
 			// Ensure input validation type is known
 			if (!in_array($extraSettings['validationType'], Constants::SHORT_INPUT_TYPES)) {
 				return false;

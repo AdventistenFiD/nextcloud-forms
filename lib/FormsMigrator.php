@@ -148,6 +148,9 @@ class FormsMigrator implements IMigrator {
 				$form->setSubmitMultiple($formData['submitMultiple']);
 				$form->setAllowEditSubmissions($formData['allowEditSubmissions']);
 				$form->setShowExpiration($formData['showExpiration']);
+				$form->setSendSubmissionEmail($formData['sendSubmissionEmail'] ?? false);
+				$form->setAttachSubmissionPdf($formData['attachSubmissionPdf'] ?? false);
+				$form->setSendConfirmationEmail($formData['sendConfirmationEmail'] ?? false);
 
 				$this->formMapper->insert($form);
 

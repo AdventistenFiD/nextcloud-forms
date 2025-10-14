@@ -5,4 +5,7 @@
 
 const stylelintConfig = require('@nextcloud/stylelint-config')
 
-module.exports = stylelintConfig
+module.exports = {
+	...stylelintConfig,
+	ignoreFiles: [...(stylelintConfig.ignoreFiles ?? []), 'css/forms-style.css'],
+}

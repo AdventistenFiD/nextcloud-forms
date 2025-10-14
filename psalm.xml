@@ -20,6 +20,7 @@
 	</projectFiles>
 	<extraFiles>
 		<directory name="vendor" />
+		<directory name="vendor-bin/psalm/vendor" />
 		<ignoreFiles>
 			<directory name="vendor/phpunit/php-code-coverage" />
 		</ignoreFiles>
@@ -51,5 +52,6 @@
 	<stubs>
 		<file name="tests/stubs/oc_hooks_emitter.php" />
 		<file name="tests/stubs/oca-analytics-idatasource.php" />
+		<file name="tests/stubs-circles.php" />
 	</stubs>
 </psalm>

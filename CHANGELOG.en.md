@@ -5,6 +5,20 @@
 
 # Changelog
 
+## v5.2.2 - 2025-10-14
+
+- **Confirmation emails for form submissions**
+
+    Form owners can now enable confirmation emails that are automatically sent to respondents after they submit a form. This helps keep participants informed about their submissions.
+
+- **Improved testing infrastructure**
+
+    Enhanced integration and unit tests for better code quality and reliability. Added support for Circles testing and improved test bootstrap configuration.
+
+- **Component enhancements**
+
+    Various improvements to form components including better question rendering, pagination, and date/time handling.
+
 ## v5.2.0 - 2025-09-25
 
 - **Time: restrictions and ranges**

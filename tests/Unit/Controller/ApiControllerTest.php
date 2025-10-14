@@ -381,13 +381,16 @@ class ApiControllerTest extends TestCase {
 				'isAnonymous' => false,
 				'submitMultiple' => false,
 				'showExpiration' => false,
-				'lastUpdated' => 123456789,
+				'lastUpdated' => 0,
 				'submissionMessage' => null,
 				'fileId' => null,
 				'fileFormat' => null,
 				'allowEditSubmissions' => false,
 				'lockedBy' => null,
 				'lockedUntil' => null,
+				'sendSubmissionEmail' => false,
+				'attachSubmissionPdf' => false,
+				'sendConfirmationEmail' => false,
 			]]
 		];
 	}
@@ -406,7 +409,6 @@ class ApiControllerTest extends TestCase {
 		$expected['id'] = null;
 		// TODO fix test, currently unset because behaviour has changed
 		$expected['state'] = null;
-		$expected['lastUpdated'] = null;
 		$this->formMapper->expects($this->once())
 			->method('insert')
 			->with(self::callback(self::createFormValidator($expected)))

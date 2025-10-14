@@ -5,6 +5,32 @@
 
 # Changelog
 
+## v5.2.2 - 2025-10-14
+
+### Enhancements
+
+- feat: add confirmation email functionality for form submissions
+    - New ConfirmationEmailListener to handle form submission events
+    - New ConfirmationMailService for sending confirmation emails to respondents
+    - Add confirmation email settings to Form model
+- feat: enhance integration tests with better setup and teardown
+- feat: add Circles stub for testing
+- feat: improve QuestionShort component with enhanced input handling
+- feat: update pagination toolbar styling
+
+### Fixed
+
+- fix: remove old CSS build artifacts (embedded.css, forms.css, public.css)
+- fix: improve test bootstrap configuration
+- fix: update component styling in QuestionDate and Submit views
+
+### Maintenance
+
+- chore: update dependencies in package.json and package-lock.json
+- chore: update stylelint configuration
+- chore: improve test coverage with new unit tests for confirmation emails
+- chore: update OpenAPI specification
+
 ## v5.2.1 - 2025-10-02
 
 [Full Changelog](https://github.com/nextcloud/forms/compare/v5.2.0...v5.2.1)

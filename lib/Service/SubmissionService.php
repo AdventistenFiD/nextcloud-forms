@@ -466,7 +466,8 @@ class SubmissionService {
 			}
 
 			// Handle custom validation of short answers
-			if ($question['type'] === Constants::ANSWER_TYPE_SHORT && !$this->validateShortQuestion($question, $answers[$questionId][0])) {
+			if (in_array($question['type'], [Constants::ANSWER_TYPE_SHORT, Constants::ANSWER_TYPE_EMAIL], true)
+				&& !$this->validateShortQuestion($question, $answers[$questionId][0])) {
 				throw new \InvalidArgumentException(sprintf('Invalid input for question "%s".', $question['text']));
 			}
 
@@ -547,6 +548,9 @@ class SubmissionService {
 	 */
 	private function validateShortQuestion(array $question, string $data): bool {
 		if (!isset($question['extraSettings']) || !isset($question['extraSettings']['validationType'])) {
+			if (($question['type'] ?? null) === Constants::ANSWER_TYPE_EMAIL) {
+				return $this->mailer->validateMailAddress($data);
+			}
 			// No type defined, so fallback to 'text' => no special handling
 			return true;
 		}

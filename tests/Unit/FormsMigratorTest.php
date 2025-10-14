@@ -108,6 +108,9 @@ class FormsMigratorTest extends TestCase {
     "submitMultiple": false,
     "allowEditSubmissions": false,
     "showExpiration": false,
+    "sendSubmissionEmail": false,
+    "attachSubmissionPdf": false,
+    "sendConfirmationEmail": false,
     "lastUpdated": 123456789,
     "submissionMessage": "Back to website",
     "questions": [
@@ -182,6 +185,9 @@ JSON
 		$form->setSubmitMultiple(false);
 		$form->setAllowEditSubmissions(false);
 		$form->setShowExpiration(false);
+		$form->setSendSubmissionEmail(false);
+		$form->setAttachSubmissionPdf(false);
+		$form->setSendConfirmationEmail(false);
 		$form->setLastUpdated(123456789);
 		$form->setSubmissionMessage('Back to website');
 
@@ -253,7 +259,7 @@ JSON
 	public function dataImport() {
 		return [
 			'exactlyOneOfEach' => [
-				'$inputJson' => '[{"title":"Link","description":"","created":1646251830,"access":{"permitAllUsers":false,"showToAllUsers":false},"expires":0,"state":0,"lockedBy":null,"lockedUntil":null,"isAnonymous":false,"submitMultiple":false,"allowEditSubmissions":false,"showExpiration":false,"lastUpdated":123456789,"questions":[{"id":14,"order":2,"type":"multiple","isRequired":false,"text":"checkbox","description":"huhu","extraSettings":{},"options":[{"text":"ans1"}]}],"submissions":[{"userId":"anyUser@localhost","timestamp":1651354059,"answers":[{"questionId":14,"text":"ans1"}]}]}]'
+                '$inputJson' => '[{"title":"Link","description":"","created":1646251830,"access":{"permitAllUsers":false,"showToAllUsers":false},"expires":0,"state":0,"lockedBy":null,"lockedUntil":null,"isAnonymous":false,"submitMultiple":false,"allowEditSubmissions":false,"showExpiration":false,"sendSubmissionEmail":false,"attachSubmissionPdf":false,"sendConfirmationEmail":false,"lastUpdated":123456789,"questions":[{"id":14,"order":2,"type":"multiple","isRequired":false,"text":"checkbox","description":"huhu","extraSettings":{},"options":[{"text":"ans1"}]}],"submissions":[{"userId":"anyUser@localhost","timestamp":1651354059,"answers":[{"questionId":14,"text":"ans1"}]}]}]'
 			]
 		];
 	}
