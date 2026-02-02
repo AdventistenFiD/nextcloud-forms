@@ -50,6 +50,7 @@
 
 				<!-- Action menu for cloud export and deletion -->
 				<NcActions
+					v-if="canExportSubmissions"
 					:aria-label="t('forms', 'Options')"
 					force-name
 					:inline="isMobile ? 0 : 1"
@@ -449,6 +450,12 @@ export default {
 			return this.form.state === FormState.FormArchived
 		},
 
+		canExportSubmissions() {
+			return this.form.permissions.includes(
+				this.PERMISSION_TYPES.PERMISSION_RESULTS,
+			)
+		},
+
 		canDeleteSubmissions() {
 			return (
 				this.form.permissions.includes(
@@ -799,6 +806,7 @@ export default {
 					}),
 				)
 				this.submissions = []
+				this.form.submissionCount = 0
 				emit('forms:last-updated:set', this.form.id)
 			} catch (error) {
 				logger.error('Error while removing responses', { error })

@@ -22,6 +22,7 @@ use OCA\Forms\Db\Submission;
 use OCA\Forms\Db\SubmissionMapper;
 use OCA\Forms\Db\UploadedFile;
 use OCA\Forms\Db\UploadedFileMapper;
+use OCA\Forms\Exception\NoSuchFormException;
 use OCA\Forms\ResponseDefinitions;
 use OCA\Forms\Service\ConfigService;
 use OCA\Forms\Service\FormsService;
@@ -61,6 +62,7 @@ use Psr\Log\LoggerInterface;
  * @psalm-import-type FormsPartialForm from ResponseDefinitions
  * @psalm-import-type FormsQuestion from ResponseDefinitions
  * @psalm-import-type FormsQuestionType from ResponseDefinitions
+ * @psalm-import-type FormsQuestionGridCellType from ResponseDefinitions
  * @psalm-import-type FormsSubmission from ResponseDefinitions
  * @psalm-import-type FormsSubmissions from ResponseDefinitions
  * @psalm-import-type FormsUploadedFile from ResponseDefinitions
@@ -445,6 +447,7 @@ class ApiController extends OCSController {
 	 *
 	 * @param int $formId the form id
 	 * @param FormsQuestionType $type the new question type
+	 * @param FormsQuestionGridCellType $subtype the new question subtype
 	 * @param string $text the new question title
 	 * @param ?int $fromId (optional) id of the question that should be cloned
 	 * @return DataResponse<Http::STATUS_CREATED, FormsQuestion, array{}>
@@ -461,7 +464,7 @@ class ApiController extends OCSController {
 	#[NoAdminRequired()]
 	#[BruteForceProtection(action: 'form')]
 	#[ApiRoute(verb: 'POST', url: '/api/v3/forms/{formId}/questions')]
-	public function newQuestion(int $formId, ?string $type = null, string $text = '', ?int $fromId = null): DataResponse {
+	public function newQuestion(int $formId, ?string $type = null, ?string $subtype = null, string $text = '', ?int $fromId = null): DataResponse {
 		$form = $this->formsService->getFormIfAllowed($formId, Constants::PERMISSION_EDIT);
 		$this->formsService->obtainFormLock($form);
 
@@ -515,6 +518,9 @@ class ApiController extends OCSController {
 			$extraSettings = [];
 			if ($mapEmailToShort === true) {
 				$extraSettings['validationType'] = 'email';
+			}
+			if ($subtype) {
+				$extraSettings['questionType'] = $subtype;
 			}
 			$question->setExtraSettings($extraSettings);
 
@@ -840,6 +846,7 @@ class ApiController extends OCSController {
 	 * @param int $formId id of the form
 	 * @param int $questionId id of the question
 	 * @param list<string> $optionTexts the new option text
+	 * @param string|null $optionType the new option type (e.g. 'row')
 	 * @return DataResponse<Http::STATUS_CREATED, list<FormsOption>, array{}> Returns a DataResponse containing the added options
 	 * @throws OCSBadRequestException This question is not part ot the given form
 	 * @throws OCSForbiddenException This form is archived and can not be modified
@@ -853,11 +860,12 @@ class ApiController extends OCSController {
 	#[NoAdminRequired()]
 	#[BruteForceProtection(action: 'form')]
 	#[ApiRoute(verb: 'POST', url: '/api/v3/forms/{formId}/questions/{questionId}/options')]
-	public function newOption(int $formId, int $questionId, array $optionTexts): DataResponse {
-		$this->logger->debug('Adding new options: formId: {formId}, questionId: {questionId}, text: {text}', [
+	public function newOption(int $formId, int $questionId, array $optionTexts, ?string $optionType = null): DataResponse {
+		$this->logger->debug('Adding new options: formId: {formId}, questionId: {questionId}, text: {text}, optionType: {optionType}', [
 			'formId' => $formId,
 			'questionId' => $questionId,
 			'text' => $optionTexts,
+			'optionType' => $optionType,
 		]);
 
 		$form = $this->formsService->getFormIfAllowed($formId, Constants::PERMISSION_EDIT);
@@ -883,7 +891,7 @@ class ApiController extends OCSController {
 		}
 
 		// Retrieve all options sorted by 'order'. Takes the order of the last array-element and adds one.
-		$options = $this->optionMapper->findByQuestion($questionId);
+		$options = $this->optionMapper->findByQuestion($questionId, $optionType);
 		$lastOption = array_pop($options);
 		if ($lastOption) {
 			$optionOrder = $lastOption->getOrder() + 1;
@@ -898,6 +906,7 @@ class ApiController extends OCSController {
 			$option->setQuestionId($questionId);
 			$option->setText($text);
 			$option->setOrder($optionOrder++);
+			$option->setOptionType($optionType);
 
 			try {
 				$option = $this->optionMapper->insert($option);
@@ -1054,6 +1063,7 @@ class ApiController extends OCSController {
 	 * @param int $formId id of form
 	 * @param int $questionId id of question
 	 * @param list<int> $newOrder Array of option ids in new order.
+	 * @param string|null $optionType the new option type (e.g. 'row')
 	 * @return DataResponse<Http::STATUS_OK, array<string, FormsOrder>, array{}>
 	 * @throws OCSBadRequestException The given question id doesn't match the form
 	 * @throws OCSBadRequestException The given array contains duplicates
@@ -1070,7 +1080,7 @@ class ApiController extends OCSController {
 	#[NoAdminRequired()]
 	#[BruteForceProtection(action: 'form')]
 	#[ApiRoute(verb: 'PATCH', url: '/api/v3/forms/{formId}/questions/{questionId}/options')]
-	public function reorderOptions(int $formId, int $questionId, array $newOrder) {
+	public function reorderOptions(int $formId, int $questionId, array $newOrder, ?string $optionType = null): DataResponse {
 		$form = $this->formsService->getFormIfAllowed($formId, Constants::PERMISSION_EDIT);
 		$this->formsService->obtainFormLock($form);
 
@@ -1097,7 +1107,7 @@ class ApiController extends OCSController {
 			throw new OCSBadRequestException('The given array contains duplicates');
 		}
 
-		$options = $this->optionMapper->findByQuestion($questionId);
+		$options = $this->optionMapper->findByQuestion($questionId, $optionType);
 
 		if (sizeof($options) !== sizeof($newOrder)) {
 			$this->logger->debug('The length of the given array does not match the number of stored options');
@@ -1175,8 +1185,14 @@ class ApiController extends OCSController {
 	#[ApiRoute(verb: 'GET', url: '/api/v3/forms/{formId}/submissions')]
 	public function getSubmissions(int $formId, ?string $query = null, ?int $limit = null, int $offset = 0, ?string $fileFormat = null): DataResponse|DataDownloadResponse {
 		$form = $this->formsService->getFormIfAllowed($formId, Constants::PERMISSION_RESULTS);
+		$permissions = $this->formsService->getPermissions($form);
+		$canSeeAllSubmissions = in_array(Constants::PERMISSION_RESULTS, $permissions, true);
 
 		if ($fileFormat !== null) {
+			if (!$canSeeAllSubmissions) {
+				throw new NoSuchFormException('The current user has no permission to get the results for this form', Http::STATUS_FORBIDDEN);
+			}
+
 			$submissionsData = $this->submissionService->getSubmissionsData($form, $fileFormat);
 			$fileName = $this->formsService->getFileName($form, $fileFormat);
 
@@ -1184,7 +1200,7 @@ class ApiController extends OCSController {
 		}
 
 		// Load submissions and currently active questions
-		if (in_array(Constants::PERMISSION_RESULTS, $this->formsService->getPermissions($form))) {
+		if ($canSeeAllSubmissions) {
 			$submissions = $this->submissionService->getSubmissions($formId, null, $query, $limit, $offset);
 			$filteredSubmissionsCount = $this->submissionMapper->countSubmissions($formId, null, $query);
 		} else {
@@ -1711,6 +1727,22 @@ class ApiController extends OCSController {
 	 * @param string[]|array<array{uploadedFileId: string, uploadedFileName: string}> $answerArray
 	 */
 	private function storeAnswersForQuestion(Form $form, $submissionId, array $question, array $answerArray): void {
+		if ($question['type'] === Constants::ANSWER_TYPE_GRID) {
+			if (!$answerArray) {
+				return;
+			}
+
+			$answerEntity = new Answer();
+			$answerEntity->setSubmissionId($submissionId);
+			$answerEntity->setQuestionId($question['id']);
+
+			$answerText = json_encode($answerArray);
+			$answerEntity->setText($answerText);
+			$this->answerMapper->insert($answerEntity);
+
+			return;
+		}
+
 		foreach ($answerArray as $answer) {
 			$answerEntity = new Answer();
 			$answerEntity->setSubmissionId($submissionId);
@@ -1806,25 +1838,31 @@ class ApiController extends OCSController {
 	 * Checks if the current user is allowed to archive/unarchive the form
 	 */
 	private function checkArchivePermission(Form $form, string $currentUserId, array $keyValuePairs): void {
-		$isArchived = $this->formsService->isFormArchived($form);
-		$owner = $currentUserId === $form->getOwnerId();
-		$onlyState = sizeof($keyValuePairs) === 1 && key_exists('state', $keyValuePairs);
-
 		// Only check if the request is trying to change the archived state
-		if ($onlyState && $keyValuePairs['state'] === Constants::FORM_STATE_ARCHIVED) {
-			// Trying to archive
-			if (!$owner || $isArchived) {
-				$this->logger->debug('Only the form owner can archive the form, and only if it is not already archived');
-				throw new OCSForbiddenException('Only the form owner can archive the form, and only if it is not already archived');
-			}
-		} elseif ($onlyState && $keyValuePairs['state'] === Constants::FORM_STATE_CLOSED) {
-			// Trying to unarchive
-			if (!$owner || !$isArchived) {
-				$this->logger->debug('Only the form owner can unarchive the form, and only if it is currently archived');
-				throw new OCSForbiddenException('Only the form owner can unarchive the form, and only if it is currently archived');
-			}
+		if (!array_key_exists('state', $keyValuePairs)) {
+			return;
 		}
-		// All other updates are allowed (including updates that do not touch the state)
+
+		$isArchived = $this->formsService->isFormArchived($form);
+		$isOwner = $currentUserId === $form->getOwnerId();
+
+		// If the request contains 'state' it must be the only key
+		if (sizeof($keyValuePairs) !== 1) {
+			$this->logger->debug('State may only be changed on its own');
+			throw new OCSForbiddenException('State may only be changed on its own');
+		}
+
+		$state = $keyValuePairs['state'];
+
+		if ($state === Constants::FORM_STATE_ARCHIVED && !$isArchived && !$isOwner) {
+			// Trying to archive
+			$this->logger->debug('Only the form owner can archive the form, and only if it is not already archived');
+			throw new OCSForbiddenException('Only the form owner can archive the form, and only if it is not already archived');
+		} elseif ($state === Constants::FORM_STATE_CLOSED && $isArchived && !$isOwner) {
+			// Trying to unarchive
+			$this->logger->debug('Only the form owner can unarchive the form, and only if it is currently archived');
+			throw new OCSForbiddenException('Only the form owner can unarchive the form, and only if it is currently archived');
+		}
 	}
 
 	private function isLockingRequest(array $keyValuePairs): bool {

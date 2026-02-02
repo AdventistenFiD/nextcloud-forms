@@ -212,8 +212,6 @@ class FormsService {
 			$userSubmissionCount = $this->submissionMapper->countSubmissions($form->getId(), $this->currentUser->getUID());
 			if ($userSubmissionCount > 0) {
 				$result['submissionCount'] = $userSubmissionCount;
-				// Append `results` permission if user has submitted to the form
-				$result['permissions'][] = Constants::PERMISSION_RESULTS;
 			}
 		}
 
@@ -804,6 +802,9 @@ class FormsService {
 				break;
 			case Constants::ANSWER_TYPE_DATE:
 				$allowed = Constants::EXTRA_SETTINGS_DATE;
+				break;
+			case Constants::ANSWER_TYPE_GRID:
+				$allowed = Constants::EXTRA_SETTINGS_GRID;
 				break;
 			case Constants::ANSWER_TYPE_TIME:
 				$allowed = Constants::EXTRA_SETTINGS_TIME;

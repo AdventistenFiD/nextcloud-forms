@@ -26,12 +26,12 @@
 		</template>
 		<NcSelect
 			v-if="readOnly"
-			:value="selectedOption"
+			:model-value="selectedOption"
 			:name="name || undefined"
 			:placeholder="selectOptionPlaceholder"
 			:multiple="isMultiple"
 			:required="isRequired"
-			:options="sortedOptions"
+			:options="choices"
 			:searchable="false"
 			label="text"
 			:aria-label-combobox="selectOptionPlaceholder"
@@ -42,14 +42,14 @@
 			</div>
 			<Draggable
 				v-else
-				v-model="sortedOptions"
+				v-model="choices"
 				class="question__content"
 				animation="200"
 				direction="vertical"
 				handle=".option__drag-handle"
 				invert-swap
 				tag="ul"
-				@change="saveOptionsOrder"
+				@change="saveOptionsOrder('choice')"
 				@start="isDragging = true"
 				@end="isDragging = false">
 				<TransitionGroup
@@ -60,7 +60,7 @@
 					">
 					<!-- Answer text input edit -->
 					<AnswerInput
-						v-for="(answer, index) in sortedOptions"
+						v-for="(answer, index) in choices"
 						:key="answer.local ? 'option-local' : answer.id"
 						ref="input"
 						:answer="answer"
@@ -70,13 +70,14 @@
 						:is-unique="!isMultiple"
 						:max-index="options.length - 1"
 						:max-option-length="maxStringLengths.optionText"
+						option-type="choice"
 						@create-answer="onCreateAnswer"
 						@update:answer="updateAnswer"
 						@delete="deleteOption"
 						@focus-next="focusNextInput"
-						@move-up="onOptionMoveUp(index)"
-						@move-down="onOptionMoveDown(index)"
-						@tabbed-out="checkValidOption" />
+						@move-up="onOptionMoveUp(index, 'choice')"
+						@move-down="onOptionMoveDown(index, 'choice')"
+						@tabbed-out="checkValidOption('choice')" />
 				</TransitionGroup>
 			</Draggable>
 		</template>
@@ -100,6 +101,7 @@ import AnswerInput from './AnswerInput.vue'
 import Question from './Question.vue'
 import QuestionMixin from '../../mixins/QuestionMixin.js'
 import QuestionMultipleMixin from '../../mixins/QuestionMultipleMixin.ts'
+import { OptionType } from '../../models/Constants.ts'
 
 export default {
 	name: 'QuestionDropdown',
@@ -154,6 +156,16 @@ export default {
 			)
 
 			return this.isMultiple ? selected : selected[0]
+		},
+
+		choices: {
+			get() {
+				return this.sortOptionsOfType(this.options, OptionType.Choice)
+			},
+
+			set(value) {
+				this.updateOptionsOrder(value, OptionType.Choice)
+			},
 		},
 	},
 
