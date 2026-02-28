@@ -379,6 +379,12 @@ OC.L10N.register(
     "New form response received" : "Neue Formularantwort erhalten",
     "A new response was submitted to the form %s." : "Für das Formular %s wurde eine neue Antwort eingereicht.",
     "Submission summary:" : "Zusammenfassung der Einsendung:",
-    "Open form results" : "Formularergebnisse öffnen"
+    "Open form results" : "Formularergebnisse öffnen",
+    "Nextcloud Forms submission" : "Nextcloud Forms-Einsendung",
+    "Form: %s" : "Formular: %s",
+    "Submission ID: %s" : "Einsendungs-ID: %s",
+    "Submitted at (UTC): %s" : "Eingereicht am (UTC): %s",
+    "Responses:" : "Antworten:",
+    "No responses captured" : "Keine Antworten erfasst"
 },
 "nplurals=2; plural=(n != 1);");

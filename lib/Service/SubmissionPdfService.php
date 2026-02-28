@@ -11,32 +11,38 @@ namespace OCA\Forms\Service;
 
 use OCA\Forms\Db\Form;
 use OCA\Forms\Db\Submission;
+use OCP\IL10N;
 
 class SubmissionPdfService {
-	private const MAX_PDF_LINES = 50;
+	private const MAX_LINES_PER_PAGE = 48;
+
+	public function __construct(
+		private IL10N $l10n,
+	) {
+	}
 
 	/**
-	 * @param array<int, array{question: string, answer: string}> $answerSummaries
+	 * @param array<int, array{question: string, answer: string}> $answerEntries
 	 */
-	public function createPdf(Form $form, Submission $submission, array $answerSummaries = []): string {
+	public function createPdf(Form $form, Submission $submission, array $answerEntries = []): string {
 		$submissionTimestamp = max(0, $submission->getTimestamp());
 		$headerLines = [
-			'Nextcloud Forms submission',
-			'Form: ' . $form->getTitle(),
-			'Submission ID: ' . $submission->getId(),
-			'Submitted at (UTC): ' . gmdate('Y-m-d H:i:s', $submissionTimestamp),
+			$this->l10n->t('Nextcloud Forms submission'),
+			$this->l10n->t('Form: %s', [$form->getTitle()]),
+			$this->l10n->t('Submission ID: %s', [(string)$submission->getId()]),
+			$this->l10n->t('Submitted at (UTC): %s', [gmdate('Y-m-d H:i:s', $submissionTimestamp)]),
 			'',
-			'Responses:',
+			$this->l10n->t('Responses:'),
 		];
 
 		$responseLines = [];
-		if ($answerSummaries === []) {
-			$responseLines[] = '- No text responses captured';
+		if ($answerEntries === []) {
+			$responseLines[] = '- ' . $this->l10n->t('No responses captured');
 		} else {
-			foreach ($answerSummaries as $summary) {
-				$responseLines[] = '- ' . $summary['question'] . ':';
+			foreach ($answerEntries as $entry) {
+				$responseLines[] = '- ' . $entry['question'] . ':';
 
-				$normalizedAnswer = str_replace(["\r\n", "\r"], "\n", $summary['answer']);
+				$normalizedAnswer = str_replace(["\r\n", "\r"], "\n", $entry['answer']);
 				foreach (explode("\n", $normalizedAnswer) as $answerLine) {
 					$responseLines[] = '  ' . ($answerLine === '' ? '[empty line]' : $answerLine);
 				}
@@ -45,9 +51,12 @@ class SubmissionPdfService {
 
 		$lines = array_merge($headerLines, $responseLines);
 		$pdfLines = $this->normalizePdfLines($lines);
-		$contentStream = $this->createContentStream($pdfLines);
+		$contentStreams = array_map(
+			fn (array $pageLines): string => $this->createContentStream($pageLines),
+			$this->paginatePdfLines($pdfLines),
+		);
 
-		return $this->assemblePdf($contentStream);
+		return $this->assemblePdf($contentStreams);
 	}
 
 	public function createFilename(Form $form, Submission $submission): string {
@@ -74,10 +83,6 @@ class SubmissionPdfService {
 			$encodedLine = $this->encodeLine($line);
 			foreach ($this->wrapLine($encodedLine, 96) as $wrappedLine) {
 				$normalizedLines[] = $wrappedLine;
-				if (count($normalizedLines) >= self::MAX_PDF_LINES) {
-					$normalizedLines[count($normalizedLines) - 1] = '...';
-					return $normalizedLines;
-				}
 			}
 		}
 
@@ -138,6 +143,15 @@ class SubmissionPdfService {
 
 	/**
 	 * @param list<string> $pdfLines
+	 * @return list<list<string>>
+	 */
+	private function paginatePdfLines(array $pdfLines): array {
+		$pages = array_chunk($pdfLines, self::MAX_LINES_PER_PAGE);
+		return $pages === [] ? [['']] : $pages;
+	}
+
+	/**
+	 * @param list<string> $pdfLines
 	 */
 	private function createContentStream(array $pdfLines): string {
 		$content = "BT\n/F1 11 Tf\n14 TL\n50 792 Td\n";
@@ -150,14 +164,34 @@ class SubmissionPdfService {
 		return $content;
 	}
 
-	private function assemblePdf(string $contentStream): string {
+	/**
+	 * @param list<string> $contentStreams
+	 */
+	private function assemblePdf(array $contentStreams): string {
+		$pageCount = count($contentStreams);
+		$fontObjectId = 3 + ($pageCount * 2);
+		$pageObjectIds = [];
+
 		$objects = [
 			1 => '<< /Type /Catalog /Pages 2 0 R >>',
-			2 => '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-			3 => '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>',
-			4 => '<< /Length ' . strlen($contentStream) . " >>\nstream\n" . $contentStream . "\nendstream",
-			5 => '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+			2 => '',
 		];
+		foreach ($contentStreams as $index => $contentStream) {
+			$pageObjectId = 3 + ($index * 2);
+			$contentObjectId = $pageObjectId + 1;
+			$pageObjectIds[] = $pageObjectId;
+
+			$objects[$pageObjectId] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 '
+				. $fontObjectId . ' 0 R >> >> /Contents ' . $contentObjectId . " 0 R >>";
+			$objects[$contentObjectId] = '<< /Length ' . strlen($contentStream) . " >>\nstream\n" . $contentStream . "\nendstream";
+		}
+		$objects[2] = '<< /Type /Pages /Kids [' . implode(' ', array_map(
+			static fn (int $pageObjectId): string => $pageObjectId . ' 0 R',
+			$pageObjectIds,
+		)) . '] /Count ' . $pageCount . ' >>';
+		$objects[$fontObjectId] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>';
+
+		ksort($objects);
 
 		$pdf = "%PDF-1.4\n";
 		$offsets = [0 => 0];
@@ -168,13 +202,14 @@ class SubmissionPdfService {
 		}
 
 		$startXref = strlen($pdf);
-		$pdf .= "xref\n0 6\n";
+		$objectCount = max(array_keys($objects)) + 1;
+		$pdf .= "xref\n0 " . $objectCount . "\n";
 		$pdf .= sprintf("%010d 65535 f \n", 0);
-		for ($i = 1; $i <= 5; $i++) {
+		for ($i = 1; $i < $objectCount; $i++) {
 			$pdf .= sprintf("%010d 00000 n \n", $offsets[$i]);
 		}
 
-		$pdf .= "trailer\n<< /Size 6 /Root 1 0 R >>\n";
+		$pdf .= "trailer\n<< /Size " . $objectCount . " /Root 1 0 R >>\n";
 		$pdf .= "startxref\n" . $startXref . "\n%%EOF";
 
 		return $pdf;
