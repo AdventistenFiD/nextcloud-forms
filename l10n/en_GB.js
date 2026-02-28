@@ -371,6 +371,13 @@ OC.L10N.register(
     "Form Submission Confirmed" : "Form submission confirmed",
     "Thank you for submitting the form %s. We have successfully received your response." : "Thank you for submitting the form %s. We have successfully received your response.",
     "Your responses:" : "Your responses:",
-    "This message was sent automatically by %s." : "This message was sent automatically by %s."
+    "This message was sent automatically by %s." : "This message was sent automatically by %s.",
+    "Additional notification recipients" : "Additional notification recipients",
+    "Additional recipients receive the same new-submission notifications." : "Additional recipients receive the same new-submission notifications.",
+    "New response to %s" : "New response to %s",
+    "New form response received" : "New form response received",
+    "A new response was submitted to the form %s." : "A new response was submitted to the form %s.",
+    "Submission summary:" : "Submission summary:",
+    "Open form results" : "Open form results"
 },
 "nplurals=2; plural=(n != 1);");

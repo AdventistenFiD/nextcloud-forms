@@ -371,6 +371,13 @@ OC.L10N.register(
     "Form Submission Confirmed" : "Formularübermittlung bestätigt",
     "Thank you for submitting the form %s. We have successfully received your response." : "Danke für das Ausfüllen des Formulars %s. Wir haben deine Antwort erfolgreich erhalten.",
     "Your responses:" : "Deine Antworten:",
-    "This message was sent automatically by %s." : "Diese Nachricht wurde automatisch von %s gesendet."
+    "This message was sent automatically by %s." : "Diese Nachricht wurde automatisch von %s gesendet.",
+    "Additional notification recipients" : "Zusätzliche Benachrichtigungsempfänger",
+    "Additional recipients receive the same new-submission notifications." : "Zusätzliche Empfänger erhalten dieselben Benachrichtigungen über neue Einsendungen.",
+    "New response to %s" : "Neue Antwort auf %s",
+    "New form response received" : "Neue Formularantwort erhalten",
+    "A new response was submitted to the form %s." : "Für das Formular %s wurde eine neue Antwort eingereicht.",
+    "Submission summary:" : "Zusammenfassung der Einsendung:",
+    "Open form results" : "Formularergebnisse öffnen"
 },
 "nplurals=2; plural=(n != 1);");
