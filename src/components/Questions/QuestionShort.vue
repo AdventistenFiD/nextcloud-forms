@@ -67,6 +67,17 @@
 						)
 					}}
 				</NcActionCheckbox>
+				<NcActionCheckbox
+					v-if="validationType === 'email' && confirmationRecipient"
+					:model-value="requireEmailVerification"
+					@update:model-value="onRequireEmailVerificationChange">
+					{{
+						t(
+							'forms',
+							'Require respondents to verify this email address',
+						)
+					}}
+				</NcActionCheckbox>
 				<NcActionInput
 					v-if="validationType === 'regex'"
 					ref="regexInput"
@@ -163,6 +174,10 @@ export default {
 		confirmationRecipient() {
 			return this.extraSettings?.confirmationRecipient === true
 		},
+
+		requireEmailVerification() {
+			return this.extraSettings?.requireEmailVerification === true
+		},
 	},
 
 	methods: {
@@ -205,6 +220,7 @@ export default {
 					validationType,
 					validationRegex: this.validationRegex,
 					confirmationRecipient: false,
+					requireEmailVerification: false,
 				})
 			} else {
 				// For all other types except regex we close the menu (for regex we keep it open to allow entering a regex)
@@ -216,6 +232,7 @@ export default {
 						validationType === 'email'
 							? this.confirmationRecipient
 							: false,
+					requireEmailVerification: false,
 				})
 			}
 		},
@@ -223,6 +240,14 @@ export default {
 		onConfirmationRecipientChange(value) {
 			this.onExtraSettingsChange({
 				confirmationRecipient: value === true,
+				requireEmailVerification:
+					value === true && this.requireEmailVerification,
+			})
+		},
+
+		onRequireEmailVerificationChange(value) {
+			this.onExtraSettingsChange({
+				requireEmailVerification: value === true,
 			})
 		},
 

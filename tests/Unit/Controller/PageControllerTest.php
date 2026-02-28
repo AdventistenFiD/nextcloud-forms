@@ -13,6 +13,7 @@ use OCA\Forms\Db\ShareMapper;
 use OCA\Forms\Db\SubmissionMapper;
 use OCA\Forms\Service\ConfigService;
 use OCA\Forms\Service\FormsService;
+use OCA\Forms\Service\SubmissionVerificationService;
 use OCP\Accounts\IAccountManager;
 use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\AppFramework\Http\TemplateResponse;
@@ -66,6 +67,8 @@ class PageControllerTest extends TestCase {
 
 	/** @var IUserSession|MockObject */
 	private $userSession;
+	/** @var SubmissionVerificationService|MockObject */
+	private $submissionVerificationService;
 
 	public function setUp(): void {
 		parent::setUp();
@@ -82,6 +85,7 @@ class PageControllerTest extends TestCase {
 		$this->urlGenerator = $this->createMock(IURLGenerator::class);
 		$this->userManager = $this->createMock(IUserManager::class);
 		$this->userSession = $this->createMock(IUserSession::class);
+		$this->submissionVerificationService = $this->createMock(SubmissionVerificationService::class);
 
 		$this->pageController = new PageController(
 			'forms',
@@ -91,6 +95,7 @@ class PageControllerTest extends TestCase {
 			$this->submissionMapper,
 			$this->configService,
 			$this->formsService,
+			$this->submissionVerificationService,
 			$this->accountManager,
 			$this->initialState,
 			$this->l10n,

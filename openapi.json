@@ -537,6 +537,9 @@
                     "confirmationRecipient": {
                         "type": "boolean"
                     },
+                    "requireEmailVerification": {
+                        "type": "boolean"
+                    },
                     "questionType": {
                         "type": "string"
                     }
@@ -609,6 +612,7 @@
                     "formId",
                     "userId",
                     "timestamp",
+                    "isVerified",
                     "answers",
                     "userDisplayName"
                 ],
@@ -627,6 +631,9 @@
                     "timestamp": {
                         "type": "integer",
                         "format": "int64"
+                    },
+                    "isVerified": {
+                        "type": "boolean"
                     },
                     "answers": {
                         "type": "array",

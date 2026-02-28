@@ -392,6 +392,8 @@ class ApiV3Test extends IntegrationBase {
 					'shares' => [],
 					'submissionCount' => 0,
 					'submissionMessage' => null,
+					'notifyOwnerOnSubmission' => false,
+					'notificationRecipients' => [],
 					'fileId' => null,
 					'fileFormat' => null,
 				]
@@ -451,6 +453,8 @@ class ApiV3Test extends IntegrationBase {
 					'canSubmit' => true,
 					'permissions' => Constants::PERMISSION_ALL,
 					'submissionMessage' => 'Back to website',
+					'notifyOwnerOnSubmission' => false,
+					'notificationRecipients' => [],
 					'questions' => [
 						[
 							'type' => 'short',
@@ -1109,6 +1113,7 @@ class ApiV3Test extends IntegrationBase {
 							'userId' => 'user1',
 							'userDisplayName' => 'User No. 1',
 							'timestamp' => 123456,
+							'isVerified' => true,
 							'answers' => [
 								[
 									// 'submissionId' => Checked dynamically
@@ -1130,6 +1135,7 @@ class ApiV3Test extends IntegrationBase {
 							'userId' => 'user2',
 							'userDisplayName' => 'user2',
 							'timestamp' => 12345,
+							'isVerified' => true,
 							'answers' => [
 								[
 									// 'submissionId' => Checked dynamically
@@ -1151,6 +1157,7 @@ class ApiV3Test extends IntegrationBase {
 							'userId' => 'user3',
 							'userDisplayName' => 'user3',
 							'timestamp' => 1234,
+							'isVerified' => true,
 							'answers' => [
 								[
 									// 'submissionId' => Checked dynamically
@@ -1380,6 +1387,7 @@ CSV
 			'userId' => 'test',
 			'userDisplayName' => 'Test Displayname',
 			'formId' => $this->testForms[0]['id'],
+			'isVerified' => true,
 			'answers' => [
 				[
 					'questionId' => $this->testForms[0]['questions'][0]['id'],
