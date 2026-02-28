@@ -18,7 +18,7 @@ use OCP\IDBConnection;
  */
 class SubmissionVerificationMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'forms_v2_submission_verifications', SubmissionVerification::class);
+		parent::__construct($db, 'forms_v2_submission_verify', SubmissionVerification::class);
 	}
 
 	/**

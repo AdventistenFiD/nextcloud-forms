@@ -42,8 +42,8 @@ class Version050300Date20260228171000 extends SimpleMigrationStep {
 			]);
 		}
 
-		if (!$schema->hasTable('forms_v2_submission_verifications')) {
-			$verificationTable = $schema->createTable('forms_v2_submission_verifications');
+		if (!$schema->hasTable('forms_v2_submission_verify')) {
+			$verificationTable = $schema->createTable('forms_v2_submission_verify');
 			$verificationTable->addColumn('id', Types::INTEGER, [
 				'autoincrement' => true,
 				'notnull' => true,
@@ -70,8 +70,8 @@ class Version050300Date20260228171000 extends SimpleMigrationStep {
 			]);
 
 			$verificationTable->setPrimaryKey(['id']);
-			$verificationTable->addUniqueIndex(['submission_id'], 'forms_submissions_verify_submission_id');
-			$verificationTable->addUniqueIndex(['token_hash'], 'forms_submissions_verify_token_hash');
+			$verificationTable->addUniqueIndex(['submission_id'], 'forms_subv_sub_id');
+			$verificationTable->addUniqueIndex(['token_hash'], 'forms_subv_token_hash');
 		}
 
 		return $schema;
