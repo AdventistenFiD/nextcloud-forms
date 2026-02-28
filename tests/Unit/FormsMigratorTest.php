@@ -107,10 +107,12 @@ class FormsMigratorTest extends TestCase {
     "isAnonymous": false,
     "submitMultiple": false,
     "allowEditSubmissions": false,
-    "showExpiration": false,
-    "lastUpdated": 123456789,
-    "submissionMessage": "Back to website",
-    "questions": [
+	    "showExpiration": false,
+	    "lastUpdated": 123456789,
+	    "submissionMessage": "Back to website",
+		"notifyOwnerOnSubmission": false,
+		"notificationRecipients": [],
+	    "questions": [
       {
         "id": 14,
         "order": 2,
@@ -127,10 +129,11 @@ class FormsMigratorTest extends TestCase {
       }
     ],
     "submissions": [
-      {
-        "userId": "anyUser@localhost",
-        "timestamp": 1651354059,
-        "answers": [
+	      {
+	        "userId": "anyUser@localhost",
+	        "timestamp": 1651354059,
+			"isVerified": true,
+	        "answers": [
           {
             "questionId": 14,
             "text": "ans1"
@@ -184,6 +187,8 @@ JSON
 		$form->setShowExpiration(false);
 		$form->setLastUpdated(123456789);
 		$form->setSubmissionMessage('Back to website');
+		$form->setNotifyOwnerOnSubmission(false);
+		$form->setNotificationRecipients([]);
 
 		$this->formsService->expects($this->once())
 			->method('getQuestions')
@@ -216,6 +221,7 @@ JSON
 					'formId' => 42,
 					'userId' => 'anyUser',
 					'timestamp' => 1651354059,
+					'isVerified' => true,
 					'answers' => [
 						[
 							'id' => 35,

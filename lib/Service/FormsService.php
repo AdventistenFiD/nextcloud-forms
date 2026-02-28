@@ -880,6 +880,16 @@ class FormsService {
 				}
 			}
 
+			if (($extraSettings['requireEmailVerification'] ?? false) === true) {
+				// Email verification requires a designated confirmation recipient email field
+				if (
+					($extraSettings['validationType'] ?? null) !== 'email'
+					|| ($extraSettings['confirmationRecipient'] ?? false) !== true
+				) {
+					return false;
+				}
+			}
+
 			if (!isset($extraSettings['validationType'])) {
 				return true;
 			}

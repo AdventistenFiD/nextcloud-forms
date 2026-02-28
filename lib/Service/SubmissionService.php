@@ -104,6 +104,7 @@ class SubmissionService {
 	 *     formId: int,
 	 *     userId: string,
 	 *     timestamp: int,
+	 *     isVerified: bool,
 	 *     answers: list<FormsAnswer>,
 	 * }>
 	 */
@@ -133,6 +134,7 @@ class SubmissionService {
 	 *     formId: int,
 	 *     userId: string,
 	 *     timestamp: int,
+	 *     isVerified: bool,
 	 *     answers: list<FormsAnswer>,
 	 * }
 	 */

@@ -1376,6 +1376,7 @@ class ApiController extends OCSController {
 		$submission = new Submission();
 		$submission->setFormId($formId);
 		$submission->setTimestamp(time());
+		$submission->setIsVerified(true);
 
 		// If not logged in, anonymous, or embedded use anonID
 		if (!$this->currentUser || $form->getIsAnonymous()) {

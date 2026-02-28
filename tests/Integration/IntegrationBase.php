@@ -53,6 +53,10 @@ class IntegrationBase extends TestCase {
 
 		// Write our test forms into db
 		foreach ($this->testForms as $index => $form) {
+			$notifyOwnerOnSubmission = $form['notify_owner_on_submission'] ?? false;
+			$notificationRecipients = $form['notification_recipients'] ?? [];
+			$notificationRecipientsJson = $notificationRecipients === [] ? null : json_encode($notificationRecipients, JSON_THROW_ON_ERROR);
+			$notificationRecipientsType = $notificationRecipientsJson === null ? IQueryBuilder::PARAM_NULL : IQueryBuilder::PARAM_STR;
 			$qb->insert('forms_v2_forms')
 				->values([
 					'hash' => $qb->createNamedParameter($form['hash'], IQueryBuilder::PARAM_STR),
@@ -70,10 +74,14 @@ class IntegrationBase extends TestCase {
 					'submission_message' => $qb->createNamedParameter($form['submission_message'], IQueryBuilder::PARAM_STR),
 					'file_id' => $qb->createNamedParameter($form['file_id'], IQueryBuilder::PARAM_INT),
 					'file_format' => $qb->createNamedParameter($form['file_format'], IQueryBuilder::PARAM_STR),
+					'notify_owner_on_submission' => $qb->createNamedParameter($notifyOwnerOnSubmission, IQueryBuilder::PARAM_BOOL),
+					'notification_recipients_json' => $qb->createNamedParameter($notificationRecipientsJson, $notificationRecipientsType),
 				]);
 			$qb->executeStatement();
 			$formId = $qb->getLastInsertId();
 			$this->testForms[$index]['id'] = $formId;
+			$this->testForms[$index]['notify_owner_on_submission'] = $notifyOwnerOnSubmission;
+			$this->testForms[$index]['notification_recipients'] = $notificationRecipients;
 
 			// Insert Questions into DB
 			foreach (($form['questions'] ?? []) as $qIndex => $question) {
@@ -120,15 +128,18 @@ class IntegrationBase extends TestCase {
 
 			// Insert Submissions into DB
 			foreach (($form['submissions'] ?? []) as $suIndex => $submission) {
+				$isVerified = $submission['isVerified'] ?? true;
 				$qb->insert('forms_v2_submissions')
 					->values([
 						'form_id' => $qb->createNamedParameter($formId, IQueryBuilder::PARAM_INT),
 						'user_id' => $qb->createNamedParameter($submission['userId'], IQueryBuilder::PARAM_STR),
-						'timestamp' => $qb->createNamedParameter($submission['timestamp'], IQueryBuilder::PARAM_INT)
+						'timestamp' => $qb->createNamedParameter($submission['timestamp'], IQueryBuilder::PARAM_INT),
+						'is_verified' => $qb->createNamedParameter($isVerified, IQueryBuilder::PARAM_BOOL),
 					]);
 				$qb->executeStatement();
 				$submissionId = $qb->getLastInsertId();
 				$this->testForms[$index]['submissions'][$suIndex]['id'] = $submissionId;
+				$this->testForms[$index]['submissions'][$suIndex]['isVerified'] = $isVerified;
 
 				foreach ($submission['answers'] as $aIndex => $answer) {
 					$qb->insert('forms_v2_answers')
