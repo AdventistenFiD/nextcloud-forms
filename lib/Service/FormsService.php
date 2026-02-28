@@ -705,7 +705,7 @@ class FormsService {
 	 * @param Form $form Related Form
 	 * @param string $submitter The ID of the user who submitted the form. Can also be our 'anon-user-'-ID
 	 */
-	public function notifyNewSubmission(Form $form, Submission $submission): void {
+	public function notifyNewSubmission(Form $form, Submission $submission, string $trigger = FormSubmittedEvent::TRIGGER_CREATED): void {
 		$shares = $this->getShares($form->getId());
 		try {
 			$this->activityManager->publishNewSubmission($form, $submission->getUserId());
@@ -734,7 +734,7 @@ class FormsService {
 			}
 		}
 
-		$this->eventDispatcher->dispatchTyped(new FormSubmittedEvent($form, $submission));
+		$this->eventDispatcher->dispatchTyped(new FormSubmittedEvent($form, $submission, $trigger));
 	}
 
 	/**

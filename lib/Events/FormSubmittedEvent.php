@@ -11,9 +11,13 @@ use OCA\Forms\Db\Form;
 use OCA\Forms\Db\Submission;
 
 class FormSubmittedEvent extends AbstractFormEvent {
+	public const TRIGGER_CREATED = 'created';
+	public const TRIGGER_UPDATED = 'updated';
+
 	public function __construct(
 		Form $form,
 		private Submission $submission,
+		private string $trigger = self::TRIGGER_CREATED,
 	) {
 		parent::__construct($form);
 	}
@@ -22,10 +26,19 @@ class FormSubmittedEvent extends AbstractFormEvent {
 		return $this->submission;
 	}
 
+	public function getTrigger(): string {
+		return $this->trigger;
+	}
+
+	public function isNewSubmission(): bool {
+		return $this->trigger === self::TRIGGER_CREATED;
+	}
+
 	public function getWebhookSerializable(): array {
 		return [
 			'form' => $this->form->read(),
 			'submission' => $this->submission->read(),
+			'trigger' => $this->trigger,
 		];
 	}
 }

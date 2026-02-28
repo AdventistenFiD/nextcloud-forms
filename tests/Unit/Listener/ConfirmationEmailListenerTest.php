@@ -19,6 +19,7 @@ use OCA\Forms\Db\Submission;
 use OCA\Forms\Events\FormSubmittedEvent;
 use OCA\Forms\Listener\ConfirmationEmailListener;
 use OCA\Forms\Service\ConfirmationMailService;
+use OCP\AppFramework\Db\DoesNotExistException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Test\TestCase;
@@ -150,6 +151,76 @@ class ConfirmationEmailListenerTest extends TestCase {
 			->method('findById')
 			->with(301)
 			->willReturn($shortQuestion);
+
+		$this->mailService->expects($this->never())
+			->method('send');
+
+		$this->listener->handle($event);
+	}
+
+	public function testHandleSkipsUpdatedSubmissions(): void {
+		$form = $this->createForm(20, 'Survey');
+		$submission = $this->createSubmission(42, $form->getId());
+		$event = new FormSubmittedEvent($form, $submission, FormSubmittedEvent::TRIGGER_UPDATED);
+
+		$this->answerMapper->expects($this->never())
+			->method('findBySubmission');
+
+		$this->mailService->expects($this->never())
+			->method('send');
+
+		$this->listener->handle($event);
+	}
+
+	public function testHandleWithoutStoredAnswersSkipsMail(): void {
+		$form = $this->createForm(20, 'Survey');
+		$submission = $this->createSubmission(42, $form->getId());
+		$event = new FormSubmittedEvent($form, $submission);
+
+		$this->answerMapper->expects($this->once())
+			->method('findBySubmission')
+			->willThrowException(new DoesNotExistException('No answers'));
+
+		$this->mailService->expects($this->never())
+			->method('send');
+
+		$this->listener->handle($event);
+	}
+
+	public function testHandleWithMultipleRecipientQuestionsSkipsMail(): void {
+		$form = $this->createForm(7, 'Feedback form');
+		$submission = $this->createSubmission(12, $form->getId());
+		$event = new FormSubmittedEvent($form, $submission);
+
+		$firstEmailAnswer = $this->createAnswer(101, 'first@example.com', $submission->getId());
+		$secondEmailAnswer = $this->createAnswer(102, 'second@example.com', $submission->getId());
+
+		$this->answerMapper->expects($this->once())
+			->method('findBySubmission')
+			->with($submission->getId())
+			->willReturn([$firstEmailAnswer, $secondEmailAnswer]);
+
+		$firstEmailQuestion = $this->createQuestion(101, Constants::ANSWER_TYPE_SHORT, 'Email address', [
+			'validationType' => 'email',
+			'confirmationRecipient' => true,
+		]);
+		$secondEmailQuestion = $this->createQuestion(102, Constants::ANSWER_TYPE_SHORT, 'Backup email address', [
+			'validationType' => 'email',
+			'confirmationRecipient' => true,
+		]);
+
+		$this->questionMapper->expects($this->exactly(2))
+			->method('findById')
+			->willReturnCallback(function (int $questionId) use ($firstEmailQuestion, $secondEmailQuestion): Question {
+				return match ($questionId) {
+					101 => $firstEmailQuestion,
+					102 => $secondEmailQuestion,
+					default => throw new \RuntimeException('Unexpected question id'),
+				};
+			});
+
+		$this->logger->expects($this->once())
+			->method('warning');
 
 		$this->mailService->expects($this->never())
 			->method('send');
