@@ -112,31 +112,31 @@ class SubmissionVerificationServiceTest extends TestCase {
 			->with(123)
 			->willReturn($submission);
 
-			$this->submissionMapper->expects($this->once())
-				->method('update')
-				->with($this->callback(function (Submission $updated): bool {
-					return $updated->getId() === 123 && $updated->getIsVerified() === true;
-				}));
+		$this->submissionMapper->expects($this->once())
+			->method('update')
+			->with($this->callback(function (Submission $updated): bool {
+				return $updated->getId() === 123 && $updated->getIsVerified() === true;
+			}));
 
-			$form = new Form();
-			$form->setId(1);
-			$this->formMapper->expects($this->once())
-				->method('findById')
-				->with(1)
-				->willReturn($form);
+		$form = new Form();
+		$form->setId(1);
+		$this->formMapper->expects($this->once())
+			->method('findById')
+			->with(1)
+			->willReturn($form);
 
-			$this->verificationMapper->expects($this->once())
-				->method('update')
-				->with($this->callback(function (SubmissionVerification $updated): bool {
-					return $updated->getId() === 7 && $updated->getUsed() !== null;
-				}));
-			$this->eventDispatcher->expects($this->once())
-				->method('dispatchTyped')
-				->with($this->callback(function (FormSubmittedEvent $event): bool {
-					return $event->getTrigger() === FormSubmittedEvent::TRIGGER_VERIFIED
-						&& $event->getSubmission()->getId() === 123
-						&& $event->getForm()->getId() === 1;
-				}));
+		$this->verificationMapper->expects($this->once())
+			->method('update')
+			->with($this->callback(function (SubmissionVerification $updated): bool {
+				return $updated->getId() === 7 && $updated->getUsed() !== null;
+			}));
+		$this->eventDispatcher->expects($this->once())
+			->method('dispatchTyped')
+			->with($this->callback(function (FormSubmittedEvent $event): bool {
+				return $event->getTrigger() === FormSubmittedEvent::TRIGGER_VERIFIED
+					&& $event->getSubmission()->getId() === 123
+					&& $event->getForm()->getId() === 1;
+			}));
 
 		$this->assertTrue($this->service->verifyToken($token));
 	}
