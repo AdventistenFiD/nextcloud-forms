@@ -134,6 +134,8 @@ class RespectAdminSettingsTest extends IntegrationBase {
 				'allowEditSubmissions' => false,
 				'showExpiration' => false,
 				'submissionMessage' => '',
+				'notifyOwnerOnSubmission' => false,
+				'notificationRecipients' => [],
 				'permissions' => [
 					'edit',
 					'embed',

@@ -117,7 +117,9 @@
                     "lockedBy",
                     "lockedUntil",
                     "shares",
-                    "submissionMessage"
+                    "submissionMessage",
+                    "notifyOwnerOnSubmission",
+                    "notificationRecipients"
                 ],
                 "properties": {
                     "id": {
@@ -222,6 +224,15 @@
                     "submissionMessage": {
                         "type": "string",
                         "nullable": true
+                    },
+                    "notifyOwnerOnSubmission": {
+                        "type": "boolean"
+                    },
+                    "notificationRecipients": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 }
             },
