@@ -133,9 +133,6 @@ class RespectAdminSettingsTest extends IntegrationBase {
 				'submitMultiple' => false,
 				'allowEditSubmissions' => false,
 				'showExpiration' => false,
-				'sendSubmissionEmail' => false,
-				'attachSubmissionPdf' => false,
-				'sendConfirmationEmail' => false,
 				'submissionMessage' => '',
 				'permissions' => [
 					'edit',

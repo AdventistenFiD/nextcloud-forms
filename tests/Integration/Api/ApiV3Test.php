@@ -49,9 +49,6 @@ class ApiV3Test extends IntegrationBase {
 				'submission_message' => 'Back to website',
 				'file_id' => null,
 				'file_format' => null,
-				'send_submission_email' => false,
-				'attach_submission_pdf' => false,
-				'send_confirmation_email' => false,
 				'questions' => [
 					[
 						'type' => 'short',
@@ -175,12 +172,9 @@ class ApiV3Test extends IntegrationBase {
 				'allowEditSubmissions' => false,
 				'show_expiration' => false,
 				'last_updated' => 123456789,
-			'submission_message' => '',
-			'file_id' => null,
-			'file_format' => null,
-			'send_submission_email' => false,
-			'attach_submission_pdf' => false,
-			'send_confirmation_email' => false,
+				'submission_message' => '',
+				'file_id' => null,
+				'file_format' => null,
 				'questions' => [
 					[
 						'type' => 'short',
@@ -219,11 +213,8 @@ class ApiV3Test extends IntegrationBase {
 				'show_expiration' => false,
 				'last_updated' => 123456789,
 				'submission_message' => '',
-			'file_id' => 12,
-			'file_format' => 'csv',
-			'send_submission_email' => false,
-			'attach_submission_pdf' => false,
-			'send_confirmation_email' => false,
+				'file_id' => 12,
+				'file_format' => 'csv',
 				'questions' => [
 					[
 						'type' => 'short',
@@ -387,7 +378,7 @@ class ApiV3Test extends IntegrationBase {
 						'showToAllUsers' => false
 					],
 					'expires' => 0,
-					'state' => null,
+					'state' => 0,
 					'lockedBy' => null,
 					'lockedUntil' => null,
 					'isAnonymous' => false,
@@ -403,9 +394,6 @@ class ApiV3Test extends IntegrationBase {
 					'submissionMessage' => null,
 					'fileId' => null,
 					'fileFormat' => null,
-					'sendSubmissionEmail' => false,
-					'attachSubmissionPdf' => false,
-					'sendConfirmationEmail' => false,
 				]
 			]
 		];
@@ -427,11 +415,11 @@ class ApiV3Test extends IntegrationBase {
 		// Check general behaviour of hash
 		$this->assertMatchesRegularExpression('/^[a-zA-Z0-9]{16}$/', $data['hash']);
 		unset($data['hash']);
-		// Check general behaviour of created (Created very recently)
-		$this->assertEqualsWithDelta(time(), $data['created'], 30);
+		// Check general behaviour of created (Created in the last 10 seconds)
+		$this->assertEqualsWithDelta(time(), $data['created'], 10);
 		unset($data['created']);
 		// Check general behaviour of lastUpdated (Last update in the last 10 seconds)
-		$this->assertEqualsWithDelta(time(), $data['lastUpdated'], 30);
+		$this->assertEqualsWithDelta(time(), $data['lastUpdated'], 10);
 		unset($data['lastUpdated']);
 
 		$this->assertEquals(201, $resp->getStatusCode());
@@ -570,7 +558,7 @@ class ApiV3Test extends IntegrationBase {
 		unset($data['id']);
 
 		// Allow a 10 second diff for lastUpdated between expectation and data
-		$this->assertEqualsWithDelta($expected['lastUpdated'], $data['lastUpdated'], 30);
+		$this->assertEqualsWithDelta($expected['lastUpdated'], $data['lastUpdated'], 10);
 		unset($data['lastUpdated']);
 		unset($expected['lastUpdated']);
 
@@ -642,11 +630,11 @@ class ApiV3Test extends IntegrationBase {
 		// Check general behaviour of hash
 		$this->assertMatchesRegularExpression('/^[a-zA-Z0-9]{16}$/', $data['hash']);
 		unset($data['hash']);
-		// Check general behaviour of created (Created very recently)
-		$this->assertLessThan(30, time() - $data['created']);
+		// Check general behaviour of created (Created in the last 10 seconds)
+		$this->assertTrue(time() - $data['created'] < 10);
 		unset($data['created']);
-		// Check general behaviour of lastUpdated (Last update very recently)
-		$this->assertLessThan(30, time() - $data['lastUpdated']);
+		// Check general behaviour of lastUpdated (Last update in the last 10 seconds)
+		$this->assertTrue(time() - $data['lastUpdated'] < 10);
 		unset($data['lastUpdated']);
 
 		$this->assertEquals(201, $resp->getStatusCode());
@@ -715,7 +703,6 @@ class ApiV3Test extends IntegrationBase {
 	public function dataCreateNewQuestion() {
 		return [
 			'newQuestion' => [
-				'payloadType' => 'short',
 				'expected' => [
 					// 'formId' => 3, // Checked during test
 					// 'order' => 3, // Checked during test
@@ -730,7 +717,6 @@ class ApiV3Test extends IntegrationBase {
 				]
 			],
 			'emptyQuestion' => [
-				'payloadType' => 'short',
 				'expected' => [
 					// 'formId' => 3, // Checked during test
 					// 'order' => 3, // Checked during test
@@ -743,24 +729,7 @@ class ApiV3Test extends IntegrationBase {
 					'description' => '',
 					'extraSettings' => [],
 				]
-			],
-			'emailQuestion' => [
-				'payloadType' => 'email',
-				'expected' => [
-					// 'formId' => 3, // Checked during test
-					// 'order' => 3, // Checked during test
-					'type' => 'email',
-					'isRequired' => false,
-					'text' => '',
-					'name' => '',
-					'options' => [],
-					'accept' => [],
-					'description' => '',
-					'extraSettings' => [
-						'validationType' => 'email',
-					],
-				]
-			],
+			]
 		];
 	}
 	/**
@@ -768,10 +737,10 @@ class ApiV3Test extends IntegrationBase {
 	 *
 	 * @param array $expected
 	 */
-	public function testCreateNewQuestion(string $payloadType, array $expected): void {
+	public function testCreateNewQuestion(array $expected): void {
 		$resp = $this->http->request('POST', "api/v3/forms/{$this->testForms[0]['id']}/questions", [
 			'json' => [
-				'type' => $payloadType,
+				'type' => 'short',
 				'text' => $expected['text']
 			]
 		]);
@@ -1156,11 +1125,11 @@ class ApiV3Test extends IntegrationBase {
 								]
 							]
 						],
-				[
-					// 'formId' => Checked dynamically
-					'userId' => 'user2',
-					'userDisplayName' => 'User Two',
-					'timestamp' => 12345,
+						[
+							// 'formId' => Checked dynamically
+							'userId' => 'user2',
+							'userDisplayName' => 'user2',
+							'timestamp' => 12345,
 							'answers' => [
 								[
 									// 'submissionId' => Checked dynamically
@@ -1261,8 +1230,8 @@ CSV
 		$data = substr($resp->getBody()->getContents(), 3); // Some strange Character removed at the beginning
 
 		$this->assertEquals(200, $resp->getStatusCode());
-		$this->assertEquals('attachment; filename="Title of a Form (responses).csv"', $resp->getHeaderLine('Content-Disposition'));
-		$this->assertEquals('text/csv;charset=UTF-8', $resp->getHeaderLine('Content-Type'));
+		$this->assertEquals('attachment; filename="Title of a Form (responses).csv"', $resp->getHeaders()['Content-Disposition'][0]);
+		$this->assertEquals('text/csv;charset=UTF-8', $resp->getHeaders()['Content-type'][0]);
 		$arr_txt_expected = preg_split('/,/', str_replace(["\t", "\n"], '', $expected));
 		$arr_txt_data = preg_split('/,/', str_replace(["\t", "\n"], '', $data));
 		$this->assertEquals($arr_txt_expected, $arr_txt_data);
@@ -1404,7 +1373,7 @@ CSV
 		}
 		unset($data['submissions'][0]['id']);
 		// Check general behaviour of timestamp (Insert in the last 10 seconds)
-		$this->assertLessThan(30, time() - $data['submissions'][0]['timestamp']);
+		$this->assertTrue(time() - $data['submissions'][0]['timestamp'] < 10);
 		unset($data['submissions'][0]['timestamp']);
 
 		$this->assertEquals([

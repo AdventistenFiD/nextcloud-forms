@@ -59,13 +59,17 @@ class ConfirmationEmailListener implements IEventListener {
 			$questionType = $question->getType();
 			$answerText = trim($answer->getText() ?? '');
 
-			if ($emailAddress === null && $answerText !== '' && $this->answerBelongsToEmailField($questionType, (string)$question->getText(), $question->getExtraSettings())) {
+			$extraSettings = $question->getExtraSettings();
+			$isEmailQuestion = $questionType === Constants::ANSWER_TYPE_SHORT
+				&& (($extraSettings['validationType'] ?? null) === 'email');
+
+			if ($emailAddress === null && $answerText !== '' && $isEmailQuestion) {
 				$emailAddress = $answerText;
 			}
 
 			if (
 				$answerText !== ''
-				&& in_array($questionType, [Constants::ANSWER_TYPE_SHORT, Constants::ANSWER_TYPE_LONG, 'email'], true)
+				&& in_array($questionType, [Constants::ANSWER_TYPE_SHORT, Constants::ANSWER_TYPE_LONG], true)
 			) {
 				$answerSummaries[] = [
 					'question' => $question->getText(),
@@ -79,52 +83,5 @@ class ConfirmationEmailListener implements IEventListener {
 		}
 
 		$this->confirmationMailService->send($form, $submission, $emailAddress, $answerSummaries);
-	}
-
-	/**
-	 * @param array<string, mixed> $extraSettings
-	 */
-	private function answerBelongsToEmailField(string $questionType, string $questionTitle, array $extraSettings): bool {
-		if ($questionType === 'email') {
-			return true;
-		}
-
-		// Accept short answers with explicit validation set to email
-		if ($questionType === Constants::ANSWER_TYPE_SHORT && (($extraSettings['validationType'] ?? null) === 'email')) {
-			return true;
-		}
-
-		// Accept short answers whose title clearly indicates an email address field
-		if ($questionType === Constants::ANSWER_TYPE_SHORT && $this->titleIndicatesEmail($questionTitle)) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private function titleIndicatesEmail(string $title): bool {
-		$normalized = mb_strtolower($title);
-		// Normalize by removing common separators to make matching more robust
-		$collapsed = str_replace(["\t", "\n", "\r", " ", "-", "_", ":", ";", ","], '', $normalized);
-
-		$needles = [
-			'email',           // email, eMail, EMAIL
-			'emailaddress',    // email address
-			'emailadresse',    // German
-			'emailadresa',     // variants
-			'e-mail',          // original (will match via collapse too)
-			'correoelectronico', // Spanish
-			'adresseemail',    // French
-			'emailid',         // sometimes used
-		];
-
-		foreach ($needles as $needle) {
-			$n = str_replace(["\t", "\n", "\r", " ", "-", "_", ":", ";", ","], '', mb_strtolower($needle));
-			if ($n !== '' && str_contains($collapsed, $n)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

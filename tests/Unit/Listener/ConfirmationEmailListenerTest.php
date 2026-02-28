@@ -67,7 +67,7 @@ class ConfirmationEmailListenerTest extends TestCase {
 			->with($submission->getId())
 			->willReturn([$emailAnswer, $textAnswer]);
 
-		$emailQuestion = $this->createQuestion(101, 'email', 'Email address', ['validationType' => 'email']);
+		$emailQuestion = $this->createQuestion(101, Constants::ANSWER_TYPE_SHORT, 'Email address', ['validationType' => 'email']);
 		$textQuestion = $this->createQuestion(102, Constants::ANSWER_TYPE_SHORT, 'Comment');
 
 		$this->questionMapper->expects($this->exactly(2))

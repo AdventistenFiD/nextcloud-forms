@@ -139,7 +139,7 @@ export default {
 }
 
 .selected-page {
-	padding-inline-start: 5px;
+	padding-left: 5px;
 
 	display: inline-flex;
 	align-items: center;

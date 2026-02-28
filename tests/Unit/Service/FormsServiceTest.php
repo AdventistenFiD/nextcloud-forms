@@ -255,9 +255,6 @@ class FormsServiceTest extends TestCase {
 				'allowEditSubmissions' => false,
 				'lockedBy' => null,
 				'lockedUntil' => null,
-				'sendSubmissionEmail' => false,
-				'attachSubmissionPdf' => false,
-				'sendConfirmationEmail' => false,
 			]]
 		];
 	}
@@ -285,9 +282,6 @@ class FormsServiceTest extends TestCase {
 		$form->setIsAnonymous(false);
 		$form->setSubmitMultiple(true);
 		$form->setShowExpiration(false);
-		$form->setSendSubmissionEmail(false);
-		$form->setAttachSubmissionPdf(false);
-		$form->setSendConfirmationEmail(false);
 		$form->setLastUpdated(123456789);
 
 		// User & Group Formatting
@@ -480,9 +474,6 @@ class FormsServiceTest extends TestCase {
 				'allowEditSubmissions' => false,
 				'lockedBy' => null,
 				'lockedUntil' => null,
-				'sendSubmissionEmail' => false,
-				'attachSubmissionPdf' => false,
-				'sendConfirmationEmail' => false,
 			]]
 		];
 	}
@@ -510,9 +501,6 @@ class FormsServiceTest extends TestCase {
 		$form->setIsAnonymous(false);
 		$form->setSubmitMultiple(true);
 		$form->setShowExpiration(false);
-		$form->setSendSubmissionEmail(false);
-		$form->setAttachSubmissionPdf(false);
-		$form->setSendConfirmationEmail(false);
 
 		// User & Group Formatting
 		$user = $this->createMock(IUser::class);

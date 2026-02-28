@@ -545,7 +545,6 @@
                     "date",
                     "time",
                     "short",
-                    "email",
                     "long",
                     "file",
                     "datetime",

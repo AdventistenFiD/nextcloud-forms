@@ -490,13 +490,6 @@ class ApiController extends OCSController {
 				'text' => $text,
 			]);
 
-			// Map frontend-only 'email' type to backend 'short' + fixed validation
-			$mapEmailToShort = false;
-			if ($type === 'email') {
-				$type = Constants::ANSWER_TYPE_SHORT;
-				$mapEmailToShort = true;
-			}
-
 			if (array_search($type, Constants::ANSWER_TYPES) === false) {
 				$this->logger->debug('Invalid type');
 				throw new OCSBadRequestException('Invalid type');
@@ -525,14 +518,7 @@ class ApiController extends OCSController {
 			$question->setText($text);
 			$question->setDescription('');
 			$question->setIsRequired(false);
-			$extraSettings = [];
-			if ($mapEmailToShort === true) {
-				$extraSettings['validationType'] = 'email';
-			}
-			if ($subtype) {
-				$extraSettings['questionType'] = $subtype;
-			}
-			$question->setExtraSettings($extraSettings);
+			$question->setExtraSettings($subtype ? ['questionType' => $subtype] : []);
 
 			$question = $this->questionMapper->insert($question);
 
@@ -645,15 +631,6 @@ class ApiController extends OCSController {
 		if (sizeof($keyValuePairs) === 0) {
 			$this->logger->info('Empty keyValuePairs, will not update.');
 			throw new OCSBadRequestException('This form is archived and can not be modified');
-		}
-
-		// Map frontend-only 'email' type to backend 'short' if client attempts to set it
-		if (isset($keyValuePairs['type']) && $keyValuePairs['type'] === 'email') {
-			$keyValuePairs['type'] = Constants::ANSWER_TYPE_SHORT;
-			if (!isset($keyValuePairs['extraSettings']) || !is_array($keyValuePairs['extraSettings'])) {
-				$keyValuePairs['extraSettings'] = [];
-			}
-			$keyValuePairs['extraSettings']['validationType'] = 'email';
 		}
 
 		//Don't allow to change id or formId

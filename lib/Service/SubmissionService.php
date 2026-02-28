@@ -35,8 +35,6 @@ use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
-use OCP\Mail\IEmailValidator;
-use OCP\Server;
 use OCP\Mail\IMailer;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -616,20 +614,14 @@ class SubmissionService {
 	 * Validate short question answers if special validation types are set
 	 */
 	private function validateShortQuestion(array $question, string $data): bool {
-		$validationType = $question['extraSettings']['validationType'] ?? null;
-		// If no explicit validation is set but the title indicates an e-mail field, enforce e-mail validation
-		if ($validationType === null) {
-			$title = $question['text'] ?? '';
-			if (is_string($title) && $this->titleIndicatesEmail($title)) {
-				return $this->isValidEmail($data);
-			}
+		if (!isset($question['extraSettings']) || !isset($question['extraSettings']['validationType'])) {
 			// No type defined, so fallback to 'text' => no special handling
 			return true;
 		}
 
-		switch ($validationType) {
+		switch ($question['extraSettings']['validationType']) {
 			case 'email':
-				return $this->isValidEmail($data);
+				return $this->mailer->validateMailAddress($data);
 			case 'number':
 				return is_numeric($data);
 			case 'phone':
@@ -651,40 +643,6 @@ class SubmissionService {
 				// The result is just a non-validated text on the results, but not a fully declined submission. So no need to throw but simply return false here.
 				return false;
 		}
-	}
-
-	private function isValidEmail(string $email): bool {
-		try {
-			if (class_exists(IEmailValidator::class)) {
-				/** @var IEmailValidator $validator */
-				$validator = Server::get(IEmailValidator::class);
-				return $validator->isValid($email);
-			}
-		} catch (\Throwable $e) {
-			// Fallback below
-		}
-
-		return $this->mailer->validateMailAddress($email);
-	}
-
-	private function titleIndicatesEmail(string $title): bool {
-		$normalized = mb_strtolower($title);
-		$collapsed = str_replace(["\t", "\n", "\r", " ", "-", "_", ":", ";", ","], '', $normalized);
-		$needles = [
-			'email',
-			'emailaddress',
-			'emailadresse',
-			'correoelectronico',
-			'adresseemail',
-			'emailid',
-		];
-		foreach ($needles as $needle) {
-			$n = str_replace(["\t", "\n", "\r", " ", "-", "_", ":", ";", ","], '', mb_strtolower($needle));
-			if ($n !== '' && str_contains($collapsed, $n)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private function setCellValue(Worksheet $activeWorksheet, int $column, int $row, mixed $value, string $fileFormat): void {
