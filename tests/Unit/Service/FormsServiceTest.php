@@ -255,6 +255,8 @@ class FormsServiceTest extends TestCase {
 				'allowEditSubmissions' => false,
 				'lockedBy' => null,
 				'lockedUntil' => null,
+				'notifyOwnerOnSubmission' => false,
+				'notificationRecipients' => [],
 			]]
 		];
 	}

@@ -110,6 +110,8 @@ class FormsMigratorTest extends TestCase {
     "showExpiration": false,
     "lastUpdated": 123456789,
     "submissionMessage": "Back to website",
+    "notifyOwnerOnSubmission": false,
+    "notificationRecipients": [],
     "questions": [
       {
         "id": 14,

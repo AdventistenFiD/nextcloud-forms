@@ -151,7 +151,6 @@ class OwnerNotificationListenerTest extends TestCase {
 		$submission->setFormId($formId);
 		$submission->setUserId('submitter');
 		$submission->setTimestamp(time());
-		$submission->setIsVerified(true);
 
 		return $submission;
 	}
