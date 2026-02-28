@@ -378,6 +378,16 @@ OC.L10N.register(
     "New form response received" : "Neue Formularantwort erhalten",
     "A new response was submitted to the form %s." : "Für das Formular %s wurde eine neue Antwort eingereicht.",
     "Submission summary:" : "Zusammenfassung der Einsendung:",
-    "Open form results" : "Formularergebnisse öffnen"
+    "Open form results" : "Formularergebnisse öffnen",
+    "Require respondents to verify this email address" : "Teilnehmer müssen diese E-Mail-Adresse verifizieren",
+    "Email address verified" : "E-Mail-Adresse verifiziert",
+    "Email verification failed" : "E-Mail-Verifizierung fehlgeschlagen",
+    "Your email address has been verified successfully. You can close this page now." : "Deine E-Mail-Adresse wurde erfolgreich verifiziert. Du kannst diese Seite jetzt schließen.",
+    "The verification link is invalid or expired." : "Der Verifizierungslink ist ungültig oder abgelaufen.",
+    "Verify your email for %s" : "Verifiziere deine E-Mail-Adresse für %s",
+    "Verify your email address" : "Verifiziere deine E-Mail-Adresse",
+    "A response was submitted to %s using this email address." : "Für %s wurde eine Antwort mit dieser E-Mail-Adresse eingereicht.",
+    "Please verify your email address to confirm ownership of this submission." : "Bitte verifiziere deine E-Mail-Adresse, um den Besitz dieser Einsendung zu bestätigen.",
+    "Verify email address" : "E-Mail-Adresse verifizieren"
 },
 "nplurals=2; plural=(n != 1);");

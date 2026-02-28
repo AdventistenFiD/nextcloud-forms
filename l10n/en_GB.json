@@ -376,6 +376,16 @@
     "New form response received" : "New form response received",
     "A new response was submitted to the form %s." : "A new response was submitted to the form %s.",
     "Submission summary:" : "Submission summary:",
-    "Open form results" : "Open form results"
+    "Open form results" : "Open form results",
+    "Require respondents to verify this email address" : "Require respondents to verify this email address",
+    "Email address verified" : "Email address verified",
+    "Email verification failed" : "Email verification failed",
+    "Your email address has been verified successfully. You can close this page now." : "Your email address has been verified successfully. You can close this page now.",
+    "The verification link is invalid or expired." : "The verification link is invalid or expired.",
+    "Verify your email for %s" : "Verify your email for %s",
+    "Verify your email address" : "Verify your email address",
+    "A response was submitted to %s using this email address." : "A response was submitted to %s using this email address.",
+    "Please verify your email address to confirm ownership of this submission." : "Please verify your email address to confirm ownership of this submission.",
+    "Verify email address" : "Verify email address"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }
