@@ -1215,9 +1215,9 @@ class ApiControllerTest extends TestCase {
 		$this->answerMapper->expects($this->once())
 			->method('insert');
 
-			$this->formsService->expects($this->once())
-				->method('notifyNewSubmission')
-				->with($form, $submission, FormSubmittedEvent::TRIGGER_UPDATED);
+		$this->formsService->expects($this->once())
+			->method('notifyNewSubmission')
+			->with($form, $submission, FormSubmittedEvent::TRIGGER_UPDATED);
 
 		$response = $this->apiController->updateSubmission($formId, $submissionId, $answers);
 		$this->assertEquals(new DataResponse($submissionId), $response);

@@ -544,16 +544,16 @@ class ApiController extends OCSController {
 
 			$allQuestions = $this->questionMapper->findByForm($formId);
 
-				$questionData = $sourceQuestion->read();
-				unset($questionData['id']);
-				$questionData['order'] = end($allQuestions)->getOrder() + 1;
-				if (is_array($questionData['extraSettings'] ?? null)
-					&& ($questionData['extraSettings']['confirmationRecipient'] ?? false) === true) {
-					$questionData['extraSettings']['confirmationRecipient'] = false;
-				}
+			$questionData = $sourceQuestion->read();
+			unset($questionData['id']);
+			$questionData['order'] = end($allQuestions)->getOrder() + 1;
+			if (is_array($questionData['extraSettings'] ?? null)
+				&& ($questionData['extraSettings']['confirmationRecipient'] ?? false) === true) {
+				$questionData['extraSettings']['confirmationRecipient'] = false;
+			}
 
-				$newQuestion = Question::fromParams($questionData);
-				$this->questionMapper->insert($newQuestion);
+			$newQuestion = Question::fromParams($questionData);
+			$this->questionMapper->insert($newQuestion);
 
 			$response = $newQuestion->read();
 			$response['options'] = [];
@@ -650,15 +650,15 @@ class ApiController extends OCSController {
 			throw new OCSForbiddenException('Please use reorderQuestions() to change order');
 		}
 
-			if (key_exists('extraSettings', $keyValuePairs) && !$this->formsService->areExtraSettingsValid($keyValuePairs['extraSettings'], $question->getType())) {
-				throw new OCSBadRequestException('Invalid extraSettings, will not update.');
-			}
-			$this->assertSingleConfirmationRecipientQuestion(
-				$formId,
-				$questionId,
-				$question->getType(),
-				is_array($keyValuePairs['extraSettings'] ?? null) ? $keyValuePairs['extraSettings'] : null,
-			);
+		if (key_exists('extraSettings', $keyValuePairs) && !$this->formsService->areExtraSettingsValid($keyValuePairs['extraSettings'], $question->getType())) {
+			throw new OCSBadRequestException('Invalid extraSettings, will not update.');
+		}
+		$this->assertSingleConfirmationRecipientQuestion(
+			$formId,
+			$questionId,
+			$question->getType(),
+			is_array($keyValuePairs['extraSettings'] ?? null) ? $keyValuePairs['extraSettings'] : null,
+		);
 
 		// Create QuestionEntity with given Params & Id.
 		$question = Question::fromParams($keyValuePairs);
@@ -1410,7 +1410,7 @@ class ApiController extends OCSController {
 		$this->formMapper->update($form);
 
 		//Create Activity
-			$this->formsService->notifyNewSubmission($form, $submission, FormSubmittedEvent::TRIGGER_CREATED);
+		$this->formsService->notifyNewSubmission($form, $submission, FormSubmittedEvent::TRIGGER_CREATED);
 
 		if ($form->getFileId() !== null) {
 			$this->jobList->add(SyncSubmissionsWithLinkedFileJob::class, ['form_id' => $form->getId()]);
@@ -1492,7 +1492,7 @@ class ApiController extends OCSController {
 		}
 
 		//Create Activity
-			$this->formsService->notifyNewSubmission($form, $submission, FormSubmittedEvent::TRIGGER_UPDATED);
+		$this->formsService->notifyNewSubmission($form, $submission, FormSubmittedEvent::TRIGGER_UPDATED);
 
 		return new DataResponse($submissionId);
 	}

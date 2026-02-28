@@ -71,13 +71,13 @@ class ConfirmationEmailListener implements IEventListener {
 				&& (($extraSettings['validationType'] ?? null) === 'email');
 			$isConfirmationRecipient = ($extraSettings['confirmationRecipient'] ?? false) === true;
 
-				if ($answerText !== '' && $isEmailQuestion && $isConfirmationRecipient) {
-					if ($emailAddress !== null && !hash_equals($emailAddress, $answerText)) {
-						$hasAmbiguousRecipients = true;
-						break;
-					}
-					$emailAddress = $answerText;
+			if ($answerText !== '' && $isEmailQuestion && $isConfirmationRecipient) {
+				if ($emailAddress !== null && !hash_equals($emailAddress, $answerText)) {
+					$hasAmbiguousRecipients = true;
+					break;
 				}
+				$emailAddress = $answerText;
+			}
 
 			if (
 				$answerText !== ''
