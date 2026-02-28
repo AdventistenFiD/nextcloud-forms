@@ -56,6 +56,12 @@
 					@update:model-value="onChangeValidationType(validationTypeName)">
 					{{ validationTypeObject.label }}
 				</NcActionRadio>
+				<NcActionCheckbox
+					v-if="validationType === 'email'"
+					:model-value="confirmationRecipient"
+					@update:model-value="onConfirmationRecipientChange">
+					{{ t('forms', 'Use this question as confirmation email recipient') }}
+				</NcActionCheckbox>
 				<NcActionInput
 					v-if="validationType === 'regex'"
 					ref="regexInput"
@@ -75,6 +81,7 @@
 </template>
 
 <script>
+import NcActionCheckbox from '@nextcloud/vue/components/NcActionCheckbox'
 import NcActionInput from '@nextcloud/vue/components/NcActionInput'
 import NcActionRadio from '@nextcloud/vue/components/NcActionRadio'
 import NcActions from '@nextcloud/vue/components/NcActions'
@@ -91,6 +98,7 @@ export default {
 		IconRegex,
 		NcActions,
 		NcActionInput,
+		NcActionCheckbox,
 		NcActionRadio,
 		Question,
 	},
@@ -146,6 +154,10 @@ export default {
 		validationRegex() {
 			return this.extraSettings?.validationRegex || ''
 		},
+
+		confirmationRecipient() {
+			return this.extraSettings?.confirmationRecipient === true
+		},
 	},
 
 	methods: {
@@ -187,6 +199,7 @@ export default {
 				this.onExtraSettingsChange({
 					validationType,
 					validationRegex: this.validationRegex,
+					confirmationRecipient: false,
 				})
 			} else {
 				// For all other types except regex we close the menu (for regex we keep it open to allow entering a regex)
@@ -194,8 +207,18 @@ export default {
 				this.onExtraSettingsChange({
 					validationType:
 						validationType === 'text' ? undefined : validationType,
+					confirmationRecipient:
+						validationType === 'email'
+							? this.confirmationRecipient
+							: false,
 				})
 			}
+		},
+
+		onConfirmationRecipientChange(value) {
+			this.onExtraSettingsChange({
+				confirmationRecipient: value === true,
+			})
 		},
 
 		/**

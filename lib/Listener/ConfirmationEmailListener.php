@@ -62,8 +62,9 @@ class ConfirmationEmailListener implements IEventListener {
 			$extraSettings = $question->getExtraSettings();
 			$isEmailQuestion = $questionType === Constants::ANSWER_TYPE_SHORT
 				&& (($extraSettings['validationType'] ?? null) === 'email');
+			$isConfirmationRecipient = ($extraSettings['confirmationRecipient'] ?? false) === true;
 
-			if ($emailAddress === null && $answerText !== '' && $isEmailQuestion) {
+			if ($emailAddress === null && $answerText !== '' && $isEmailQuestion && $isConfirmationRecipient) {
 				$emailAddress = $answerText;
 			}
 

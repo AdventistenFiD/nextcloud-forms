@@ -40,6 +40,7 @@ namespace OCA\Forms;
  *   timeRange?: bool,
  *   validationRegex?: string,
  *   validationType?: string,
+ *   confirmationRecipient?: bool,
  *   questionType?: string,
  * }
  *

@@ -67,7 +67,10 @@ class ConfirmationEmailListenerTest extends TestCase {
 			->with($submission->getId())
 			->willReturn([$emailAnswer, $textAnswer]);
 
-		$emailQuestion = $this->createQuestion(101, Constants::ANSWER_TYPE_SHORT, 'Email address', ['validationType' => 'email']);
+		$emailQuestion = $this->createQuestion(101, Constants::ANSWER_TYPE_SHORT, 'Email address', [
+			'validationType' => 'email',
+			'confirmationRecipient' => true,
+		]);
 		$textQuestion = $this->createQuestion(102, Constants::ANSWER_TYPE_SHORT, 'Comment');
 
 		$this->questionMapper->expects($this->exactly(2))
@@ -100,6 +103,31 @@ class ConfirmationEmailListenerTest extends TestCase {
 						&& in_array('Looks great!', $answers, true);
 				})
 			);
+
+		$this->listener->handle($event);
+	}
+
+	public function testHandleWithEmailValidationButWithoutRecipientFlagSkipsMail(): void {
+		$form = $this->createForm(21, 'Survey');
+		$submission = $this->createSubmission(43, $form->getId());
+		$event = new FormSubmittedEvent($form, $submission);
+
+		$emailAnswer = $this->createAnswer(302, 'user@example.com', $submission->getId());
+
+		$this->answerMapper->expects($this->once())
+			->method('findBySubmission')
+			->with($submission->getId())
+			->willReturn([$emailAnswer]);
+
+		$emailQuestion = $this->createQuestion(302, Constants::ANSWER_TYPE_SHORT, 'Email', ['validationType' => 'email']);
+
+		$this->questionMapper->expects($this->once())
+			->method('findById')
+			->with(302)
+			->willReturn($emailQuestion);
+
+		$this->mailService->expects($this->never())
+			->method('send');
 
 		$this->listener->handle($event);
 	}
