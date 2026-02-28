@@ -153,6 +153,7 @@ class OwnerNotificationListenerTest extends TestCase {
 		$form->setLockedUntil(null);
 		$form->setSubmissionMessage(null);
 		$form->setNotifyOwnerOnSubmission(false);
+		$form->setAttachSubmissionPdf(false);
 		$form->setNotificationRecipients([]);
 
 		return $form;

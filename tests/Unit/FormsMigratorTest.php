@@ -111,6 +111,7 @@ class FormsMigratorTest extends TestCase {
     "lastUpdated": 123456789,
     "submissionMessage": "Back to website",
     "notifyOwnerOnSubmission": false,
+    "attachSubmissionPdf": false,
     "notificationRecipients": [],
     "questions": [
       {

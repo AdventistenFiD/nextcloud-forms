@@ -372,6 +372,7 @@ OC.L10N.register(
     "Thank you for submitting the form %s. We have successfully received your response." : "Vielen Dank für das Ausfüllen des Formulars %s. Wir haben Ihre Antwort erfolgreich erhalten.",
     "Your responses:" : "Ihre Antworten:",
     "This message was sent automatically by %s." : "Diese Nachricht wurde automatisch von %s gesendet.",
+    "Attach each submission as PDF to notification emails" : "Jede Einsendung als PDF an Benachrichtigungs-E-Mails anhängen",
     "Additional notification recipients" : "Zusätzliche Benachrichtigungsempfänger",
     "Additional recipients are notified for each new response, independent of the owner notification switch." : "Zusätzliche Empfänger werden bei jeder neuen Einsendung benachrichtigt, unabhängig vom Schalter für Besitzer-Benachrichtigungen.",
     "New response to %s" : "Neue Antwort auf %s",

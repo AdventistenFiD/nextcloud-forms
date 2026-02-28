@@ -22,6 +22,7 @@ class OwnerNotificationMailService {
 		private IMailer $mailer,
 		private IL10N $l10n,
 		private IURLGenerator $urlGenerator,
+		private SubmissionPdfService $submissionPdfService,
 		private LoggerInterface $logger,
 	) {
 	}
@@ -77,6 +78,15 @@ class OwnerNotificationMailService {
 			$message->setSubject($subject);
 			$message->setTo($validRecipients);
 			$message->useTemplate($emailTemplate);
+			if ($form->getAttachSubmissionPdf()) {
+				$message->attach(
+					$this->mailer->createAttachment(
+						$this->submissionPdfService->createPdf($form, $submission, $answerSummaries),
+						$this->submissionPdfService->createFilename($form, $submission),
+						'application/pdf',
+					),
+				);
+			}
 
 			$this->mailer->send($message);
 		} catch (\Throwable $e) {

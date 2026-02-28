@@ -140,6 +140,7 @@ namespace OCA\Forms;
  *   submissionCount?: int,
  *   submissionMessage: ?string,
  *   notifyOwnerOnSubmission: bool,
+ *   attachSubmissionPdf: bool,
  *   notificationRecipients: list<string>,
  * }
  *

@@ -372,6 +372,7 @@ OC.L10N.register(
     "Thank you for submitting the form %s. We have successfully received your response." : "Thank you for submitting the form %s. We have successfully received your response.",
     "Your responses:" : "Your responses:",
     "This message was sent automatically by %s." : "This message was sent automatically by %s.",
+    "Attach each submission as PDF to notification emails" : "Attach each submission as PDF to notification emails",
     "Additional notification recipients" : "Additional notification recipients",
     "Additional recipients are notified for each new response, independent of the owner notification switch." : "Additional recipients are notified for each new response, independent of the owner notification switch.",
     "New response to %s" : "New response to %s",

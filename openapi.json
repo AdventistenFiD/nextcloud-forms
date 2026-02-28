@@ -119,6 +119,7 @@
                     "shares",
                     "submissionMessage",
                     "notifyOwnerOnSubmission",
+                    "attachSubmissionPdf",
                     "notificationRecipients"
                 ],
                 "properties": {
@@ -226,6 +227,9 @@
                         "nullable": true
                     },
                     "notifyOwnerOnSubmission": {
+                        "type": "boolean"
+                    },
+                    "attachSubmissionPdf": {
                         "type": "boolean"
                     },
                     "notificationRecipients": {
