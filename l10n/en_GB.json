@@ -363,6 +363,12 @@
     "Search for user, group or team …" : "Search for user, group or team …",
     "Loading {title} …" : "Loading {title} …",
     "Loading responses …" : "Loading responses …",
-    "Submitting form …" : "Submitting form …"
+    "Submitting form …" : "Submitting form …",
+    "Use this question as confirmation email recipient" : "Use this question as confirmation email recipient",
+    "Confirmation for your response to %s" : "Confirmation for your response to %s",
+    "Form Submission Confirmed" : "Form submission confirmed",
+    "Thank you for submitting the form %s. We have successfully received your response." : "Thank you for submitting the form %s. We have successfully received your response.",
+    "Your responses:" : "Your responses:",
+    "This message was sent automatically by %s." : "This message was sent automatically by %s."
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

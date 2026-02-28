@@ -12,10 +12,8 @@ namespace OCA\Forms\Service;
 use OCA\Forms\Db\Form;
 use OCA\Forms\Db\Submission;
 use OCP\IL10N;
-use OCP\Mail\IMailer;
 use OCP\Mail\Headers\AutoSubmitted;
-use OCP\Mail\IEmailValidator;
-use OCP\Server;
+use OCP\Mail\IMailer;
 use Psr\Log\LoggerInterface;
 
 class ConfirmationMailService {
@@ -30,11 +28,10 @@ class ConfirmationMailService {
 	 * @param array<int, array{question: string, answer: string}> $answerSummaries
 	 */
 	public function send(Form $form, Submission $submission, string $recipient, array $answerSummaries = []): void {
-		if (!$this->isValidEmail($recipient)) {
+		if (!$this->mailer->validateMailAddress($recipient)) {
 			$this->logger->debug('Skipping confirmation mail, invalid recipient address', [
 				'formId' => $form->getId(),
 				'submissionId' => $submission->getId(),
-				'email' => $recipient,
 			]);
 			return;
 		}
@@ -95,21 +92,5 @@ class ConfirmationMailService {
 				'exception' => $e,
 			]);
 		}
-	}
-
-	private function isValidEmail(string $email): bool {
-		try {
-			// Prefer modern validator if available
-			if (class_exists(IEmailValidator::class)) {
-				/** @var IEmailValidator $validator */
-				$validator = Server::get(IEmailValidator::class);
-				return $validator->isValid($email);
-			}
-		} catch (\Throwable $e) {
-			// Fallback below
-		}
-
-		// Fallback for older cores
-		return $this->mailer->validateMailAddress($email);
 	}
 }

@@ -60,7 +60,12 @@
 					v-if="validationType === 'email'"
 					:model-value="confirmationRecipient"
 					@update:model-value="onConfirmationRecipientChange">
-					{{ t('forms', 'Use this question as confirmation email recipient') }}
+					{{
+						t(
+							'forms',
+							'Use this question as confirmation email recipient',
+						)
+					}}
 				</NcActionCheckbox>
 				<NcActionInput
 					v-if="validationType === 'regex'"
