@@ -182,7 +182,7 @@ class SubmissionPdfService {
 			$pageObjectIds[] = $pageObjectId;
 
 			$objects[$pageObjectId] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 '
-				. $fontObjectId . ' 0 R >> >> /Contents ' . $contentObjectId . " 0 R >>";
+				. $fontObjectId . ' 0 R >> >> /Contents ' . $contentObjectId . ' 0 R >>';
 			$objects[$contentObjectId] = '<< /Length ' . strlen($contentStream) . " >>\nstream\n" . $contentStream . "\nendstream";
 		}
 		$objects[2] = '<< /Type /Pages /Kids [' . implode(' ', array_map(
