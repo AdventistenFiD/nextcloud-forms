@@ -280,6 +280,8 @@ class FormsService {
 		unset($formData['fileId']);
 		unset($formData['filePath']);
 		unset($formData['fileFormat']);
+		unset($formData['notifyOwnerOnSubmission']);
+		unset($formData['notificationRecipients']);
 
 		return $formData;
 	}

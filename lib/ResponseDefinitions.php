@@ -139,6 +139,8 @@ namespace OCA\Forms;
  *   shares: list<FormsShare>,
  *   submissionCount?: int,
  *   submissionMessage: ?string,
+ *   notifyOwnerOnSubmission: bool,
+ *   notificationRecipients: list<string>,
  * }
  *
  * @psalm-type FormsUploadedFile = array{
