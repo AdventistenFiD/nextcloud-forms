@@ -870,7 +870,18 @@ class FormsService {
 			}
 
 			// Special handling of short input for validation
-		} elseif ($questionType === Constants::ANSWER_TYPE_SHORT && isset($extraSettings['validationType'])) {
+		} elseif ($questionType === Constants::ANSWER_TYPE_SHORT) {
+			if (isset($extraSettings['confirmationRecipient'])) {
+				// Confirmation recipients must be explicit email fields
+				if (($extraSettings['validationType'] ?? null) !== 'email') {
+					return false;
+				}
+			}
+
+			if (!isset($extraSettings['validationType'])) {
+				return true;
+			}
+
 			// Ensure input validation type is known
 			if (!in_array($extraSettings['validationType'], Constants::SHORT_INPUT_TYPES)) {
 				return false;

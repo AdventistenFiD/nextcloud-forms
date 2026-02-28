@@ -365,6 +365,12 @@ OC.L10N.register(
     "Search for user, group or team …" : "Suche nach Benutzer, Gruppe oder Team …",
     "Loading {title} …" : "Lade {title}…",
     "Loading responses …" : "Antworten laden …",
-    "Submitting form …" : "Übermittle Formular …"
+    "Submitting form …" : "Übermittle Formular …",
+    "Use this question as confirmation email recipient" : "Diese Frage als Empfänger für die Bestätigungs-E-Mail verwenden",
+    "Confirmation for your response to %s" : "Bestätigung für Ihre Antwort auf %s",
+    "Form Submission Confirmed" : "Formularübermittlung bestätigt",
+    "Thank you for submitting the form %s. We have successfully received your response." : "Vielen Dank für das Ausfüllen des Formulars %s. Wir haben Ihre Antwort erfolgreich erhalten.",
+    "Your responses:" : "Ihre Antworten:",
+    "This message was sent automatically by %s." : "Diese Nachricht wurde automatisch von %s gesendet."
 },
 "nplurals=2; plural=(n != 1);");

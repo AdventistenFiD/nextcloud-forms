@@ -523,6 +523,9 @@
                     "validationType": {
                         "type": "string"
                     },
+                    "confirmationRecipient": {
+                        "type": "boolean"
+                    },
                     "questionType": {
                         "type": "string"
                     }

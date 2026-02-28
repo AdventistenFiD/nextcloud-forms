@@ -18,6 +18,10 @@ class FormSubmittedEvent extends AbstractFormEvent {
 		parent::__construct($form);
 	}
 
+	public function getSubmission(): Submission {
+		return $this->submission;
+	}
+
 	public function getWebhookSerializable(): array {
 		return [
 			'form' => $this->form->read(),
