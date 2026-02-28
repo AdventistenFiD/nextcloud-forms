@@ -37,6 +37,9 @@ class OwnerNotificationListener implements IEventListener {
 		if (!($event instanceof FormSubmittedEvent)) {
 			return;
 		}
+		if (!$event->isNewSubmission()) {
+			return;
+		}
 
 		$form = $event->getForm();
 		$submission = $event->getSubmission();

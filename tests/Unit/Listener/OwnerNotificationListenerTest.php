@@ -120,6 +120,19 @@ class OwnerNotificationListenerTest extends TestCase {
 		$this->listener->handle($event);
 	}
 
+	public function testHandleSkipsUpdatedSubmissions(): void {
+		$form = $this->createForm();
+		$submission = $this->createSubmission(11, $form->getId());
+		$event = new FormSubmittedEvent($form, $submission, FormSubmittedEvent::TRIGGER_UPDATED);
+
+		$this->answerMapper->expects($this->never())
+			->method('findBySubmission');
+		$this->mailService->expects($this->never())
+			->method('send');
+
+		$this->listener->handle($event);
+	}
+
 	private function createForm(): Form {
 		$form = new Form();
 		$form->setId(1);

@@ -373,7 +373,7 @@ OC.L10N.register(
     "Your responses:" : "Deine Antworten:",
     "This message was sent automatically by %s." : "Diese Nachricht wurde automatisch von %s gesendet.",
     "Additional notification recipients" : "Zusätzliche Benachrichtigungsempfänger",
-    "Additional recipients receive the same new-submission notifications." : "Zusätzliche Empfänger erhalten dieselben Benachrichtigungen über neue Einsendungen.",
+    "Additional recipients are notified for each new response, independent of the owner notification switch." : "Zusätzliche Empfänger werden bei jeder neuen Einsendung benachrichtigt, unabhängig vom Schalter für Besitzer-Benachrichtigungen.",
     "New response to %s" : "Neue Antwort auf %s",
     "New form response received" : "Neue Formularantwort erhalten",
     "A new response was submitted to the form %s." : "Für das Formular %s wurde eine neue Antwort eingereicht.",

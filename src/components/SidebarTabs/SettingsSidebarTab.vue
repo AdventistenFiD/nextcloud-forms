@@ -61,10 +61,10 @@
 				)
 			}}
 		</NcCheckboxRadioSwitch>
-		<div class="settings-div--indent">
-			<NcTextArea
-				v-model="notificationRecipientsInput"
-				:disabled="formArchived || locked"
+			<div class="settings-div--separate">
+				<NcTextArea
+					v-model="notificationRecipientsInput"
+					:disabled="formArchived || locked"
 				:label="t('forms', 'Additional notification recipients')"
 				:placeholder="
 					t(
@@ -76,13 +76,13 @@
 				rows="4"
 				@blur="onNotificationRecipientsChange" />
 			<p class="settings-hint">
-				{{
-					t(
-						'forms',
-						'Additional recipients receive the same new-submission notifications.',
-					)
-				}}
-			</p>
+					{{
+						t(
+							'forms',
+							'Additional recipients are notified for each new response, independent of the owner notification switch.',
+						)
+					}}
+				</p>
 		</div>
 		<NcCheckboxRadioSwitch
 			:model-value="formExpires"
@@ -534,9 +534,13 @@ export default {
 	width: calc(100% - var(--default-clickable-area));
 }
 
-.settings-div--indent {
-	margin-inline-start: 40px;
-}
+	.settings-div--indent {
+		margin-inline-start: 40px;
+	}
+
+	.settings-div--separate {
+		margin-block: 4px;
+	}
 
 .settings-hint {
 	color: var(--color-text-maxcontrast);
