@@ -35,12 +35,15 @@ class ConfirmationEmailListener implements IEventListener {
 		if (!($event instanceof FormSubmittedEvent)) {
 			return;
 		}
-		if (!$event->isNewSubmission()) {
+		if (!in_array($event->getTrigger(), [FormSubmittedEvent::TRIGGER_CREATED, FormSubmittedEvent::TRIGGER_VERIFIED], true)) {
 			return;
 		}
 
 		$submission = $event->getSubmission();
 		$form = $event->getForm();
+		if ($event->getTrigger() === FormSubmittedEvent::TRIGGER_CREATED && $submission->getIsVerified() === false) {
+			return;
+		}
 
 		$emailAddress = null;
 		$answerSummaries = [];
@@ -67,9 +70,9 @@ class ConfirmationEmailListener implements IEventListener {
 			$answerText = trim($answer->getText() ?? '');
 
 			$extraSettings = $question->getExtraSettings();
-			$isEmailQuestion = $questionType === Constants::ANSWER_TYPE_SHORT
-				&& (($extraSettings['validationType'] ?? null) === 'email');
-			$isConfirmationRecipient = ($extraSettings['confirmationRecipient'] ?? false) === true;
+				$isEmailQuestion = $questionType === Constants::ANSWER_TYPE_SHORT
+					&& (($extraSettings['validationType'] ?? null) === 'email');
+				$isConfirmationRecipient = ($extraSettings['confirmationRecipient'] ?? false) === true;
 
 			if ($answerText !== '' && $isEmailQuestion && $isConfirmationRecipient) {
 				if ($emailAddress !== null && !hash_equals($emailAddress, $answerText)) {

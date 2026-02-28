@@ -133,6 +133,23 @@ class OwnerNotificationListenerTest extends TestCase {
 		$this->listener->handle($event);
 	}
 
+	public function testHandleSkipsPendingVerificationOnCreate(): void {
+		$form = $this->createForm();
+		$form->setNotifyOwnerOnSubmission(true);
+		$submission = $this->createSubmission(11, $form->getId());
+		$submission->setIsVerified(false);
+		$event = new FormSubmittedEvent($form, $submission, FormSubmittedEvent::TRIGGER_CREATED);
+
+		$this->userManager->expects($this->never())
+			->method('get');
+		$this->answerMapper->expects($this->never())
+			->method('findBySubmission');
+		$this->mailService->expects($this->never())
+			->method('send');
+
+		$this->listener->handle($event);
+	}
+
 	private function createForm(): Form {
 		$form = new Form();
 		$form->setId(1);
@@ -164,6 +181,7 @@ class OwnerNotificationListenerTest extends TestCase {
 		$submission->setFormId($formId);
 		$submission->setUserId('submitter');
 		$submission->setTimestamp(time());
+		$submission->setIsVerified(true);
 
 		return $submission;
 	}

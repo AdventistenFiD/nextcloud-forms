@@ -9,11 +9,14 @@ declare(strict_types=1);
 
 namespace OCA\Forms\Service;
 
+use OCA\Forms\Db\FormMapper;
 use OCA\Forms\Db\Submission;
 use OCA\Forms\Db\SubmissionMapper;
 use OCA\Forms\Db\SubmissionVerification;
 use OCA\Forms\Db\SubmissionVerificationMapper;
+use OCA\Forms\Events\FormSubmittedEvent;
 use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\EventDispatcher\IEventDispatcher;
 use OCP\IURLGenerator;
 use Psr\Log\LoggerInterface;
 
@@ -23,6 +26,8 @@ class SubmissionVerificationService {
 	public function __construct(
 		private SubmissionVerificationMapper $submissionVerificationMapper,
 		private SubmissionMapper $submissionMapper,
+		private FormMapper $formMapper,
+		private IEventDispatcher $eventDispatcher,
 		private IURLGenerator $urlGenerator,
 		private LoggerInterface $logger,
 	) {
@@ -124,6 +129,15 @@ class SubmissionVerificationService {
 
 		$verification->setUsed($currentTimestamp);
 		$this->submissionVerificationMapper->update($verification);
+		try {
+			$form = $this->formMapper->findById($submission->getFormId());
+			$this->eventDispatcher->dispatchTyped(new FormSubmittedEvent($form, $submission, FormSubmittedEvent::TRIGGER_VERIFIED));
+		} catch (DoesNotExistException $e) {
+			$this->logger->warning('Form missing while dispatching verification-completed submission event', [
+				'formId' => $submission->getFormId(),
+				'submissionId' => $submission->getId(),
+			]);
+		}
 
 		return true;
 	}

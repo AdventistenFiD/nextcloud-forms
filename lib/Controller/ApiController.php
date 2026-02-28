@@ -566,6 +566,9 @@ class ApiController extends OCSController {
 			if (is_array($questionData['extraSettings'] ?? null)
 				&& ($questionData['extraSettings']['confirmationRecipient'] ?? false) === true) {
 				$questionData['extraSettings']['confirmationRecipient'] = false;
+				if (($questionData['extraSettings']['requireEmailVerification'] ?? false) === true) {
+					$questionData['extraSettings']['requireEmailVerification'] = false;
+				}
 			}
 
 			$newQuestion = Question::fromParams($questionData);

@@ -225,14 +225,17 @@ export default {
 			} else {
 				// For all other types except regex we close the menu (for regex we keep it open to allow entering a regex)
 				this.isValidationTypeMenuOpen = false
+				const isEmailValidation = validationType === 'email'
 				this.onExtraSettingsChange({
 					validationType:
 						validationType === 'text' ? undefined : validationType,
-					confirmationRecipient:
-						validationType === 'email'
-							? this.confirmationRecipient
+					confirmationRecipient: isEmailValidation
+						? this.confirmationRecipient
+						: false,
+					requireEmailVerification:
+						isEmailValidation && this.confirmationRecipient
+							? this.requireEmailVerification
 							: false,
-					requireEmailVerification: false,
 				})
 			}
 		},

@@ -168,6 +168,21 @@ class SubmissionVerificationListenerTest extends TestCase {
 		$this->listener->handle($event);
 	}
 
+	public function testHandleSkipsNonCreatedTrigger(): void {
+		$form = $this->createForm();
+		$submission = $this->createSubmission(52, $form->getId());
+		$event = new FormSubmittedEvent($form, $submission, FormSubmittedEvent::TRIGGER_VERIFIED);
+
+		$this->answerMapper->expects($this->never())
+			->method('findBySubmission');
+		$this->verificationService->expects($this->never())
+			->method('markPendingVerification');
+		$this->mailService->expects($this->never())
+			->method('send');
+
+		$this->listener->handle($event);
+	}
+
 	private function createForm(): Form {
 		$form = new Form();
 		$form->setId(3);

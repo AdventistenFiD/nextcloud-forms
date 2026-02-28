@@ -381,6 +381,7 @@ OC.L10N.register(
     "Open form results" : "Open form results",
     "Require respondents to verify this email address" : "Require respondents to verify this email address",
     "Email address verified" : "Email address verified",
+    "Email address verification pending" : "Email address verification pending",
     "Email verification failed" : "Email verification failed",
     "Your email address has been verified successfully. You can close this page now." : "Your email address has been verified successfully. You can close this page now.",
     "The verification link is invalid or expired." : "The verification link is invalid or expired.",
