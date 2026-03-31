@@ -35,14 +35,24 @@ class ConfirmationEmailListener implements IEventListener {
 		if (!($event instanceof FormSubmittedEvent)) {
 			return;
 		}
+		if (!in_array($event->getTrigger(), [FormSubmittedEvent::TRIGGER_CREATED, FormSubmittedEvent::TRIGGER_VERIFIED], true)) {
+			return;
+		}
 
 		$submission = $event->getSubmission();
 		$form = $event->getForm();
+		if ($event->getTrigger() === FormSubmittedEvent::TRIGGER_CREATED && $submission->getIsVerified() === false) {
+			return;
+		}
 
 		$emailAddress = null;
 		$answerSummaries = [];
-
-		$answers = $this->answerMapper->findBySubmission($submission->getId());
+		try {
+			$answers = $this->answerMapper->findBySubmission($submission->getId());
+		} catch (DoesNotExistException $e) {
+			return;
+		}
+		$hasAmbiguousRecipients = false;
 
 		foreach ($answers as $answer) {
 			try {
@@ -64,7 +74,11 @@ class ConfirmationEmailListener implements IEventListener {
 				&& (($extraSettings['validationType'] ?? null) === 'email');
 			$isConfirmationRecipient = ($extraSettings['confirmationRecipient'] ?? false) === true;
 
-			if ($emailAddress === null && $answerText !== '' && $isEmailQuestion && $isConfirmationRecipient) {
+			if ($answerText !== '' && $isEmailQuestion && $isConfirmationRecipient) {
+				if ($emailAddress !== null && !hash_equals($emailAddress, $answerText)) {
+					$hasAmbiguousRecipients = true;
+					break;
+				}
 				$emailAddress = $answerText;
 			}
 
@@ -77,6 +91,13 @@ class ConfirmationEmailListener implements IEventListener {
 					'answer' => $answerText,
 				];
 			}
+		}
+		if ($hasAmbiguousRecipients) {
+			$this->logger->warning('Skipping confirmation mail because multiple confirmation recipient questions were answered', [
+				'formId' => $form->getId(),
+				'submissionId' => $submission->getId(),
+			]);
+			return;
 		}
 
 		if ($emailAddress === null) {

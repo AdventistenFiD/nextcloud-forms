@@ -1877,7 +1877,10 @@ class ApiController extends OCSController {
 				throw new OCSBadRequestException('notificationRecipients contains an invalid email address');
 			}
 
-			$normalizedRecipients[strtolower($trimmedRecipient)] = $trimmedRecipient;
+			$recipientKey = strtolower($trimmedRecipient);
+			if (!isset($normalizedRecipients[$recipientKey])) {
+				$normalizedRecipients[$recipientKey] = $trimmedRecipient;
+			}
 		}
 
 		if (count($normalizedRecipients) > self::MAX_NOTIFICATION_RECIPIENTS) {

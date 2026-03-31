@@ -30,6 +30,17 @@
 - **🔒 Data under your control!** Unlike in Google Forms, Typeform, Doodle and others, the survey info and responses are kept private on your instance.
 - **🙋 Get involved!** We have lots of stuff planned like more question types, collaboration on forms, [and much more](https://github.com/nextcloud/forms/milestones)!
 
+## ✉ Response email options
+
+Forms supports four email options for submissions:
+
+- **Respondent confirmation email:** Use a short question with validation type `Email address` and enable `Use this question as confirmation email recipient`.
+- **Respondent email verification:** On the same question, additionally enable `Require respondents to verify this email address`.
+- **Owner and team notifications:** In form settings, enable `Send email notifications for new responses to the form owner` and optionally define `Additional notification recipients` with one email address per line.
+- **Submission PDF attachments:** Enable `Attach each submission as PDF to notification emails` to include a rendered PDF copy in owner and external notification emails.
+
+If email verification is enabled, submissions stay unverified until the recipient clicks the verification link from the email.
+
 ## 🏗 Development setup
 
 1. ☁ Clone this app into the `apps` folder of your Nextcloud: `git clone https://github.com/nextcloud/forms.git`

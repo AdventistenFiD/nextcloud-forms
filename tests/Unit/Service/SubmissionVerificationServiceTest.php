@@ -9,12 +9,16 @@ declare(strict_types=1);
 
 namespace OCA\Forms\Tests\Unit\Service;
 
+use OCA\Forms\Db\Form;
+use OCA\Forms\Db\FormMapper;
 use OCA\Forms\Db\Submission;
 use OCA\Forms\Db\SubmissionMapper;
 use OCA\Forms\Db\SubmissionVerification;
 use OCA\Forms\Db\SubmissionVerificationMapper;
+use OCA\Forms\Events\FormSubmittedEvent;
 use OCA\Forms\Service\SubmissionVerificationService;
 use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\EventDispatcher\IEventDispatcher;
 use OCP\IURLGenerator;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
@@ -25,6 +29,10 @@ class SubmissionVerificationServiceTest extends TestCase {
 	private $verificationMapper;
 	/** @var SubmissionMapper|MockObject */
 	private $submissionMapper;
+	/** @var FormMapper|MockObject */
+	private $formMapper;
+	/** @var IEventDispatcher|MockObject */
+	private $eventDispatcher;
 	/** @var IURLGenerator|MockObject */
 	private $urlGenerator;
 	/** @var LoggerInterface|MockObject */
@@ -37,12 +45,16 @@ class SubmissionVerificationServiceTest extends TestCase {
 
 		$this->verificationMapper = $this->createMock(SubmissionVerificationMapper::class);
 		$this->submissionMapper = $this->createMock(SubmissionMapper::class);
+		$this->formMapper = $this->createMock(FormMapper::class);
+		$this->eventDispatcher = $this->createMock(IEventDispatcher::class);
 		$this->urlGenerator = $this->createMock(IURLGenerator::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
 
 		$this->service = new SubmissionVerificationService(
 			$this->verificationMapper,
 			$this->submissionMapper,
+			$this->formMapper,
+			$this->eventDispatcher,
 			$this->urlGenerator,
 			$this->logger,
 		);
@@ -106,10 +118,24 @@ class SubmissionVerificationServiceTest extends TestCase {
 				return $updated->getId() === 123 && $updated->getIsVerified() === true;
 			}));
 
+		$form = new Form();
+		$form->setId(1);
+		$this->formMapper->expects($this->once())
+			->method('findById')
+			->with(1)
+			->willReturn($form);
+
 		$this->verificationMapper->expects($this->once())
 			->method('update')
 			->with($this->callback(function (SubmissionVerification $updated): bool {
 				return $updated->getId() === 7 && $updated->getUsed() !== null;
+			}));
+		$this->eventDispatcher->expects($this->once())
+			->method('dispatchTyped')
+			->with($this->callback(function (FormSubmittedEvent $event): bool {
+				return $event->getTrigger() === FormSubmittedEvent::TRIGGER_VERIFIED
+					&& $event->getSubmission()->getId() === 123
+					&& $event->getForm()->getId() === 1;
 			}));
 
 		$this->assertTrue($this->service->verifyToken($token));

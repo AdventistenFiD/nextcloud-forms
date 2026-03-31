@@ -117,7 +117,10 @@
                     "lockedBy",
                     "lockedUntil",
                     "shares",
-                    "submissionMessage"
+                    "submissionMessage",
+                    "notifyOwnerOnSubmission",
+                    "attachSubmissionPdf",
+                    "notificationRecipients"
                 ],
                 "properties": {
                     "id": {
@@ -222,6 +225,18 @@
                     "submissionMessage": {
                         "type": "string",
                         "nullable": true
+                    },
+                    "notifyOwnerOnSubmission": {
+                        "type": "boolean"
+                    },
+                    "attachSubmissionPdf": {
+                        "type": "boolean"
+                    },
+                    "notificationRecipients": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 }
             },
@@ -523,6 +538,12 @@
                     "validationType": {
                         "type": "string"
                     },
+                    "confirmationRecipient": {
+                        "type": "boolean"
+                    },
+                    "requireEmailVerification": {
+                        "type": "boolean"
+                    },
                     "questionType": {
                         "type": "string"
                     }
@@ -595,6 +616,7 @@
                     "formId",
                     "userId",
                     "timestamp",
+                    "isVerified",
                     "answers",
                     "userDisplayName"
                 ],
@@ -613,6 +635,9 @@
                     "timestamp": {
                         "type": "integer",
                         "format": "int64"
+                    },
+                    "isVerified": {
+                        "type": "boolean"
                     },
                     "answers": {
                         "type": "array",

@@ -12,6 +12,7 @@
 
 - **📝 Simple design:** No mass of options, only the essentials. Works well on mobile of course.
 - **📊 View & export results:** Results are visualized and can also be exported as CSV in the same format used by Google Forms.
+- **✉️ Flexible submission emails:** Send respondent confirmations, optionally require email verification, and notify form owners or additional recipients with optional PDF attachments.
 - **🔒 Data under your control!** Unlike in Google Forms, Typeform, Doodle and others, the survey info and responses are kept private on your instance.
 - **🧑‍💻 Connect to your software:** Easily integrate Forms into your service with our full-fledged [REST-API](https://github.com/nextcloud/forms/blob/main/docs/API_v3.md).
 - **🙋 Get involved!** We have lots of stuff planned like more question types, collaboration on forms, [and much more](https://github.com/nextcloud/forms/milestones)!

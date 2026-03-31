@@ -39,6 +39,9 @@ class SubmissionVerificationListener implements IEventListener {
 		if (!($event instanceof FormSubmittedEvent)) {
 			return;
 		}
+		if ($event->getTrigger() !== FormSubmittedEvent::TRIGGER_CREATED) {
+			return;
+		}
 
 		$form = $event->getForm();
 		$submission = $event->getSubmission();
