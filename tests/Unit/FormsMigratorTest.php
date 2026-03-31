@@ -108,12 +108,13 @@ class FormsMigratorTest extends TestCase {
     "isAnonymous": false,
     "submitMultiple": false,
     "allowEditSubmissions": false,
-	    "showExpiration": false,
-	    "lastUpdated": 123456789,
-	    "submissionMessage": "Back to website",
-		"notifyOwnerOnSubmission": false,
-		"notificationRecipients": [],
-	    "questions": [
+    "showExpiration": false,
+    "lastUpdated": 123456789,
+    "submissionMessage": "Back to website",
+    "notifyOwnerOnSubmission": false,
+    "attachSubmissionPdf": false,
+    "notificationRecipients": [],
+    "questions": [
       {
         "id": 14,
         "order": 2,

@@ -61,7 +61,14 @@
 				)
 			}}
 		</NcCheckboxRadioSwitch>
-		<div class="settings-div--indent">
+		<NcCheckboxRadioSwitch
+			:model-value="form.attachSubmissionPdf"
+			:disabled="formArchived || locked"
+			type="switch"
+			@update:model-value="onAttachSubmissionPdfChange">
+			{{ t('forms', 'Attach each submission as PDF to notification emails') }}
+		</NcCheckboxRadioSwitch>
+		<div class="settings-div--separate">
 			<NcTextArea
 				v-model="notificationRecipientsInput"
 				:disabled="formArchived || locked"
@@ -392,6 +399,10 @@ export default {
 			this.$emit('update:form-prop', 'notifyOwnerOnSubmission', checked)
 		},
 
+		onAttachSubmissionPdfChange(checked) {
+			this.$emit('update:form-prop', 'attachSubmissionPdf', checked)
+		},
+
 		onNotificationRecipientsChange(payload) {
 			const value =
 				typeof payload === 'string'
@@ -536,6 +547,10 @@ export default {
 
 .settings-div--indent {
 	margin-inline-start: 40px;
+}
+
+.settings-div--separate {
+	margin-block: 4px;
 }
 
 .settings-hint {
