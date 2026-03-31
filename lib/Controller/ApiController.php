@@ -215,10 +215,8 @@ class ApiController extends OCSController {
 			$formData['expires'] = 0;
 			$formData['isAnonymous'] = false;
 			$formData['notifyOwnerOnSubmission'] = false;
-			$formData['notificationRecipients'] = [];
 			$formData['state'] = Constants::FORM_STATE_ACTIVE;
 			$formData['notificationRecipients'] = [];
->>>>>>> c6f8e951 (fix(forms): restore submission notification branch compatibility)
 
 			$form = Form::fromParams($formData);
 			$this->formMapper->insert($form);
