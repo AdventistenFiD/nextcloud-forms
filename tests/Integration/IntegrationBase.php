@@ -20,7 +20,6 @@ use Test\TestCase;
  */
 class IntegrationBase extends TestCase {
 	protected const TEST_USER_PASSWORD = 'Forms-Test-Password-2026!';
-
 	/** @var Array */
 	protected $testForms;
 

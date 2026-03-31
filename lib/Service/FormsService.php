@@ -204,6 +204,10 @@ class FormsService {
 		$result['permissions'] = $this->getPermissions($form);
 		// Append canSubmit, to be able to show proper EmptyContent on internal view.
 		$result['canSubmit'] = $this->canSubmit($form);
+		// Append isMaxSubmissionsReached to show proper message on submit view.
+		$maxSubmissions = $form->getMaxSubmissions();
+		$result['isMaxSubmissionsReached'] = $maxSubmissions !== null
+			&& $this->submissionMapper->countSubmissions($form->getId()) >= $maxSubmissions;
 
 		// Append submissionCount if currentUser has permissions to see results
 		if (in_array(Constants::PERMISSION_RESULTS, $result['permissions'])) {
@@ -707,7 +711,7 @@ class FormsService {
 	 * @param Form $form Related Form
 	 * @param string $submitter The ID of the user who submitted the form. Can also be our 'anon-user-'-ID
 	 */
-	public function notifyNewSubmission(Form $form, Submission $submission): void {
+	public function notifyNewSubmission(Form $form, Submission $submission, string $trigger = FormSubmittedEvent::TRIGGER_CREATED): void {
 		$shares = $this->getShares($form->getId());
 		try {
 			$this->activityManager->publishNewSubmission($form, $submission->getUserId());
@@ -736,7 +740,7 @@ class FormsService {
 			}
 		}
 
-		$this->eventDispatcher->dispatchTyped(new FormSubmittedEvent($form, $submission));
+		$this->eventDispatcher->dispatchTyped(new FormSubmittedEvent($form, $submission, $trigger));
 	}
 
 	/**

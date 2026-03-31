@@ -43,6 +43,7 @@ use OCA\Forms\Db\ShareMapper;
 use OCA\Forms\Db\Submission;
 use OCA\Forms\Db\SubmissionMapper;
 use OCA\Forms\Db\UploadedFileMapper;
+use OCA\Forms\Events\FormSubmittedEvent;
 use OCA\Forms\Exception\NoSuchFormException;
 use OCA\Forms\Service\ConfigService;
 use OCA\Forms\Service\FormsService;
@@ -437,7 +438,6 @@ class ApiControllerTest extends TestCase {
 			->willReturn('formHash');
 		$expected = $expectedForm;
 		$expected['id'] = null;
-		$expected['state'] = null;
 		$expected['lastUpdated'] = 0;
 		$this->formMapper->expects($this->once())
 			->method('insert')
@@ -1331,7 +1331,7 @@ class ApiControllerTest extends TestCase {
 
 		$this->formsService->expects($this->once())
 			->method('notifyNewSubmission')
-			->with($form, $submission);
+			->with($form, $submission, FormSubmittedEvent::TRIGGER_UPDATED);
 
 		$response = $this->apiController->updateSubmission($formId, $submissionId, $answers);
 		$this->assertEquals(new DataResponse($submissionId), $response);

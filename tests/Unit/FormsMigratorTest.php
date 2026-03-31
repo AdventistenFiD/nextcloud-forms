@@ -104,6 +104,7 @@ class FormsMigratorTest extends TestCase {
 	"state": 0,
 	"lockedBy": null,
 	"lockedUntil": null,
+	"maxSubmissions": null,
     "isAnonymous": false,
     "submitMultiple": false,
     "allowEditSubmissions": false,

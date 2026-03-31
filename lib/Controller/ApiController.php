@@ -22,6 +22,7 @@ use OCA\Forms\Db\Submission;
 use OCA\Forms\Db\SubmissionMapper;
 use OCA\Forms\Db\UploadedFile;
 use OCA\Forms\Db\UploadedFileMapper;
+use OCA\Forms\Events\FormSubmittedEvent;
 use OCA\Forms\Exception\NoSuchFormException;
 use OCA\Forms\ResponseDefinitions;
 use OCA\Forms\Service\ConfigService;
@@ -184,6 +185,7 @@ class ApiController extends OCSController {
 			$form->setIsAnonymous(false);
 			$form->setNotifyOwnerOnSubmission(false);
 			$form->setNotificationRecipients([]);
+			$form->setState(Constants::FORM_STATE_ACTIVE);
 
 			$this->formMapper->insert($form);
 		} else {
@@ -214,6 +216,9 @@ class ApiController extends OCSController {
 			$formData['isAnonymous'] = false;
 			$formData['notifyOwnerOnSubmission'] = false;
 			$formData['notificationRecipients'] = [];
+			$formData['state'] = Constants::FORM_STATE_ACTIVE;
+			$formData['notificationRecipients'] = [];
+>>>>>>> c6f8e951 (fix(forms): restore submission notification branch compatibility)
 
 			$form = Form::fromParams($formData);
 			$this->formMapper->insert($form);
@@ -1392,6 +1397,12 @@ class ApiController extends OCSController {
 			throw new OCSForbiddenException('Already submitted');
 		}
 
+		// Check if max submissions limit is reached
+		$maxSubmissions = $form->getMaxSubmissions();
+		if ($maxSubmissions > 0 && $this->submissionMapper->countSubmissions($formId) >= $maxSubmissions) {
+			throw new OCSForbiddenException('Maximum number of submissions reached');
+		}
+
 		// Insert new submission
 		$this->submissionMapper->insert($submission);
 
@@ -1416,7 +1427,7 @@ class ApiController extends OCSController {
 		$this->formMapper->update($form);
 
 		//Create Activity
-		$this->formsService->notifyNewSubmission($form, $submission);
+		$this->formsService->notifyNewSubmission($form, $submission, FormSubmittedEvent::TRIGGER_CREATED);
 
 		if ($form->getFileId() !== null) {
 			$this->jobList->add(SyncSubmissionsWithLinkedFileJob::class, ['form_id' => $form->getId()]);
@@ -1498,7 +1509,7 @@ class ApiController extends OCSController {
 		}
 
 		//Create Activity
-		$this->formsService->notifyNewSubmission($form, $submission);
+		$this->formsService->notifyNewSubmission($form, $submission, FormSubmittedEvent::TRIGGER_UPDATED);
 
 		return new DataResponse($submissionId);
 	}
