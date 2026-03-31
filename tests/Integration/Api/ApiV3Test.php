@@ -398,6 +398,7 @@ class ApiV3Test extends IntegrationBase {
 					'fileFormat' => null,
 					'maxSubmissions' => null,
 					'isMaxSubmissionsReached' => false,
+					'attachSubmissionPdf' => false,
 				]
 			]
 		];
@@ -533,6 +534,7 @@ class ApiV3Test extends IntegrationBase {
 					'fileFormat' => null,
 					'maxSubmissions' => null,
 					'isMaxSubmissionsReached' => false,
+					'attachSubmissionPdf' => false,
 				]
 			]
 		];
