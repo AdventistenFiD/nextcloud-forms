@@ -420,6 +420,7 @@ class ApiControllerTest extends TestCase {
 				'allowEditSubmissions' => false,
 				'lockedBy' => null,
 				'lockedUntil' => null,
+				'maxSubmissions' => null,
 			]]
 		];
 	}
@@ -436,9 +437,8 @@ class ApiControllerTest extends TestCase {
 			->willReturn('formHash');
 		$expected = $expectedForm;
 		$expected['id'] = null;
-		// TODO fix test, currently unset because behaviour has changed
 		$expected['state'] = null;
-		$expected['lastUpdated'] = null;
+		$expected['lastUpdated'] = 0;
 		$this->formMapper->expects($this->once())
 			->method('insert')
 			->with(self::callback(self::createFormValidator($expected)))

@@ -257,6 +257,8 @@ class FormsServiceTest extends TestCase {
 				'allowEditSubmissions' => false,
 				'lockedBy' => null,
 				'lockedUntil' => null,
+				'maxSubmissions' => null,
+				'isMaxSubmissionsReached' => false,
 			]]
 		];
 	}
@@ -476,6 +478,8 @@ class FormsServiceTest extends TestCase {
 				'allowEditSubmissions' => false,
 				'lockedBy' => null,
 				'lockedUntil' => null,
+				'maxSubmissions' => null,
+				'isMaxSubmissionsReached' => false,
 			]]
 		];
 	}
