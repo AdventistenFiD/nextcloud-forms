@@ -69,7 +69,7 @@ class Version050300Date20260228171000 extends SimpleMigrationStep {
 				'comment' => 'unix-timestamp',
 			]);
 
-			$verificationTable->setPrimaryKey(['id']);
+			$verificationTable->setPrimaryKey(['id'], 'forms_subv_id');
 			$verificationTable->addUniqueIndex(['submission_id'], 'forms_subv_sub_id');
 			$verificationTable->addUniqueIndex(['token_hash'], 'forms_subv_token_hash');
 		}
